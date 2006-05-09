@@ -32,7 +32,7 @@ define('ENTRY_DATE_RANGE', 'Search by Date Added');
   define('TEXT_ALL_MANUFACTURERS', 'All Manufacturers');
 
   define('TABLE_HEADING_IMAGE', '');
-  define('TABLE_HEADING_MODEL', 'Model');
+  define('TABLE_HEADING_MODEL', 'Part #');
   define('TABLE_HEADING_PRODUCTS', 'Product Name');
   define('TABLE_HEADING_MANUFACTURER', 'Manufacturer');
   define('TABLE_HEADING_QUANTITY', 'Quantity');

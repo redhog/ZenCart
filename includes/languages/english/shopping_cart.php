@@ -13,7 +13,7 @@ define('HEADING_TITLE_EMPTY', 'Your Shopping Cart');
 define('TEXT_INFORMATION', 'You may want to add some instructions for using the shopping cart here. (defined in includes/languages/english/shopping_cart.php)');
 define('TABLE_HEADING_REMOVE', 'Remove');
 define('TABLE_HEADING_QUANTITY', 'Qty.');
-define('TABLE_HEADING_MODEL', 'Model');
+define('TABLE_HEADING_MODEL', 'Part #');
 define('TABLE_HEADING_PRICE','Unit');
 define('TEXT_CART_EMPTY', 'Your Shopping Cart is empty.');
 define('SUB_TITLE_SUB_TOTAL', 'Sub-Total:');
