@@ -25,6 +25,7 @@ if (!defined('IS_ADMIN_FLAG')) {
   $za_contents[] = array('text' => BOX_TOOLS_EMAIL_WELCOME, 'link' => zen_href_link(FILENAME_EMAIL_WELCOME, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_TOOLS_STORE_MANAGER, 'link' => zen_href_link(FILENAME_STORE_MANAGER, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_TOOLS_DEVELOPERS_TOOL_KIT, 'link' => zen_href_link(FILENAME_DEVELOPERS_TOOL_KIT, '', 'NONSSL'));
+  $za_contents[] = array('text' => BOX_TOOLS_IMPORT, 'link' => zen_href_link(FILENAME_IMPORT, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_TOOLS_EZPAGES, 'link' => zen_href_link(FILENAME_EZPAGES_ADMIN, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_TOOLS_DEFINE_PAGES_EDITOR, 'link' => zen_href_link(FILENAME_DEFINE_PAGES_EDITOR, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_TOOLS_SQLPATCH, 'link' => zen_href_link(FILENAME_SQLPATCH, '', 'NONSSL'));

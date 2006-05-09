@@ -68,6 +68,7 @@ define('FILENAME_DEFINE_SHIPPINGINFO', 'define_shippinginfo');
 define('FILENAME_DEFINE_SITE_MAP', 'define_site_map');
 define('FILENAME_DEFINE_LANGUAGE', 'define_language');
 define('FILENAME_DEVELOPERS_TOOL_KIT', 'developers_tool_kit');
+define('FILENAME_IMPORT', 'import');
 define('FILENAME_DISCOUNT_COUPON', 'discount_coupon');
 define('FILENAME_DOWNLOAD', 'download');
 define('FILENAME_DOWNLOAD_TIME_OUT','download_time_out');

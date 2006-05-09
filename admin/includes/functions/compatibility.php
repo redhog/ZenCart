@@ -102,6 +102,23 @@
     }
   }
 
+  if (!function_exists('array_intersect_key')) {
+    function array_intersect_key() {
+      $arrays = func_get_args();
+      $array0 = $arrays[0];
+      unset($arrays[0]);
+      $result = array();
+      foreach ($array0 as $key => $value) {
+	foreach ($arrays as $arr) {
+	  if (!array_key_exists($key, $arr))
+	    continue 2;
+	}
+	$result[$key] = $value;
+      }
+      return $result;
+    }
+  }
+
   if (!function_exists('array_merge')) {
     function array_merge($array1, $array2, $array3 = '') {
       if ($array3 == '') $array3 = array();

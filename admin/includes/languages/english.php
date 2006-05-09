@@ -160,6 +160,7 @@ define('BOX_TOOLS_SERVER_INFO', 'Server Info');
 define('BOX_TOOLS_WHOS_ONLINE', 'Who\'s Online');
 define('BOX_TOOLS_STORE_MANAGER', 'Store Manager');
 define('BOX_TOOLS_DEVELOPERS_TOOL_KIT', 'Developers Tool Kit');
+define('BOX_TOOLS_IMPORT', 'Import');
 define('BOX_TOOLS_SQLPATCH','Install SQL Patches');
 define('BOX_TOOLS_EZPAGES','EZ-Pages');
 
@@ -287,6 +288,7 @@ define('IMAGE_ICON_STATUS_RED', 'Inactive');
 define('IMAGE_ICON_STATUS_RED_LIGHT', 'Set Inactive');
 define('IMAGE_ICON_INFO', 'Info');
 define('IMAGE_INSERT', 'Insert');
+define('IMAGE_IMPORT', 'Import');
 define('IMAGE_LOCK', 'Lock');
 define('IMAGE_MODULE_INSTALL', 'Install Module');
 define('IMAGE_MODULE_REMOVE', 'Remove Module');
