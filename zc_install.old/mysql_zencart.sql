@@ -1345,8 +1345,9 @@ CREATE TABLE products (
 DROP TABLE IF EXISTS products_parts;
 CREATE TABLE products_parts (
   product int(11) NOT NULL default '0',
+  product_part int(11) NOT NULL default '0',
   amount int(11) NOT NULL default '1',
-  product_part int(11) NOT NULL default '0'
+  visible int(1) default '1'
 ) TYPE=MyISAM;
 
 # --------------------------------------------------------

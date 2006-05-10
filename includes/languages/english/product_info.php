@@ -18,7 +18,7 @@ define('TEXT_PRODUCT_MANUFACTURER', 'Manufactured by: ');
 define('TEXT_PRODUCT_WEIGHT', 'Shipping Weight: ');
 define('TEXT_PRODUCT_QUANTITY', ' Units in Stock');
 define('TEXT_PRODUCT_MODEL', 'Part #: ');
-
+define('TEXT_PRODUCT_HAS_PARTS', 'Includes:');
 
 
 // previous next product

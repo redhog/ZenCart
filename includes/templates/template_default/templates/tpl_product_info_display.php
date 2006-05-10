@@ -120,6 +120,23 @@ if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == 
   <?php echo (($flag_show_product_info_weight == 1 and $products_weight !=0) ? '<li>' . TEXT_PRODUCT_WEIGHT .  $products_weight . TEXT_PRODUCT_WEIGHT_UNIT . '</li>'  : '') . "\n"; ?>
   <?php echo (($flag_show_product_info_quantity == 1) ? '<li>' . $products_quantity . TEXT_PRODUCT_QUANTITY . '</li>'  : '') . "\n"; ?>
   <?php echo (($flag_show_product_info_manufacturer == 1 and !empty($manufacturers_name)) ? '<li>' . TEXT_PRODUCT_MANUFACTURER . $manufacturers_name . '</li>' : '') . "\n"; ?>
+  <?php
+    $parts = $db->Execute("select products.products_id as id, parts.amount as qty, products.products_model as model, products_description.products_name as name " .
+			  "from " . TABLE_PRODUCTS_PARTS . " as parts, " . TABLE_PRODUCTS . " as products, " . TABLE_PRODUCTS_DESCRIPTION . " as products_description ".
+			  "where parts.product = '" . zen_get_prid($products_id_current) . "' " .
+			  "and parts.visible = '1' and products.products_id = parts.product_part " .
+			  "and products_description.products_id = parts.product_part " .
+			  "and products_description.language_id = '" . $_SESSION['languages_id'] . "'");
+   if ($parts->RecordCount()) {
+     echo "<li>" . TEXT_PRODUCT_HAS_PARTS . "<ul id='productPartsList' class='floatingBox back'>";
+     while (!$parts->EOF) {
+       $link = zen_href_link(zen_get_info_page($parts->fields["id"]), "cPath=$cPath&products_id={$parts->fields["id"]}");
+       echo "<li><a href='$link'>{$parts->fields["qty"]} x {$parts->fields["model"]}: {$parts->fields["name"]}</a></li>";
+       $parts->MoveNext();
+     }
+     echo "</ul></li>";
+   }
+  ?>
 </ul>
 <br class="clearBoth" />
 <?php
