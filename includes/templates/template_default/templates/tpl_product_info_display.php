@@ -124,7 +124,8 @@ if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == 
     $parts = $db->Execute("select products.products_id as id, parts.amount as qty, products.products_model as model, products_description.products_name as name " .
 			  "from " . TABLE_PRODUCTS_PARTS . " as parts, " . TABLE_PRODUCTS . " as products, " . TABLE_PRODUCTS_DESCRIPTION . " as products_description ".
 			  "where parts.product = '" . zen_get_prid($products_id_current) . "' " .
-			  "and parts.visible = '1' and products.products_id = parts.product_part " .
+			  "and parts.visible = '1' " .
+			  "and products.products_id = parts.product_part " .
 			  "and products_description.products_id = parts.product_part " .
 			  "and products_description.language_id = '" . $_SESSION['languages_id'] . "'");
    if ($parts->RecordCount()) {
@@ -137,6 +138,25 @@ if (CUSTOMERS_APPROVAL == 3 and TEXT_LOGIN_FOR_PRICE_BUTTON_REPLACE_SHOWROOM == 
      echo "</ul></li>";
    }
   ?>
+  <?php
+    $kits = $db->Execute("select products.products_id as id, products.products_model as model, products_description.products_name as name " .
+			  "from " . TABLE_PRODUCTS_PARTS . " as parts, " . TABLE_PRODUCTS . " as products, " . TABLE_PRODUCTS_DESCRIPTION . " as products_description ".
+			  "where parts.product_part = '" . zen_get_prid($products_id_current) . "' " .
+			  "and parts.visible = '1' " .
+			  "and products.products_id = parts.product " .
+			  "and products_description.products_id = parts.product " .
+			  "and products_description.language_id = '" . $_SESSION['languages_id'] . "'");
+   if ($kits->RecordCount()) {
+     echo "<li>" . TEXT_PRODUCT_IS_IN_KIT . "<ul id='productKitsList' class='floatingBox back'>";
+     while (!$kits->EOF) {
+       $link = zen_href_link(zen_get_info_page($kits->fields["id"]), "cPath=$cPath&products_id={$kits->fields["id"]}");
+       echo "<li><a href='$link'>{$kits->fields["model"]}: {$kits->fields["name"]}</a></li>";
+       $kits->MoveNext();
+     }
+     echo "</ul></li>";
+   }
+  ?>
+
 </ul>
 <br class="clearBoth" />
 <?php
