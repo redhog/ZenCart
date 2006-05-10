@@ -598,6 +598,75 @@ class order extends base {
 
   }
 
+  function order_parts($product) {
+    // Stock Update - Joao Correia
+    // Separated into its own function by Egil Möller to allow for kits
+    global $db, $zco_notifier;
+
+    // Handle kits
+    $parts = $db->Execute("select parts.amount as qty, products.products_id as id, products.* " .
+			  "from " . TABLE_PRODUCTS_PARTS . " as parts, " . TABLE_PRODUCTS . " as products " .
+			  "where parts.product = '" . zen_get_prid($product['id']) . "' and products.products_id = parts.product_part");
+    while (!$parts->EOF) {
+      $this->order_parts($parts->fields);
+      $parts->MoveNext();
+    }
+
+    if (STOCK_LIMITED == 'true') {
+      if (DOWNLOAD_ENABLED == 'true') {
+	$stock_query_raw = "select p.products_quantity, pad.products_attributes_filename, p.product_is_always_free_shipping
+			    from " . TABLE_PRODUCTS . " p
+			    left join " . TABLE_PRODUCTS_ATTRIBUTES . " pa
+			     on p.products_id=pa.products_id
+			    left join " . TABLE_PRODUCTS_ATTRIBUTES_DOWNLOAD . " pad
+			     on pa.products_attributes_id=pad.products_attributes_id
+			    WHERE p.products_id = '" . zen_get_prid($product['id']) . "'";
+
+	// Will work with only one option for downloadable products
+	// otherwise, we have to build the query dynamically with a loop
+	$products_attributes = $product['attributes'];
+	if (is_array($products_attributes)) {
+	  $stock_query_raw .= " AND pa.options_id = '" . $products_attributes[0]['option_id'] . "' AND pa.options_values_id = '" . $products_attributes[0]['value_id'] . "'";
+	}
+	$stock_values = $db->Execute($stock_query_raw);
+      } else {
+	$stock_values = $db->Execute("select * from " . TABLE_PRODUCTS . " where products_id = '" . zen_get_prid($product['id']) . "'");
+      }
+
+      $zco_notifier->notify('NOTIFY_ORDER_PROCESSING_STOCK_DECREMENT_BEGIN');
+
+      if ($stock_values->RecordCount() > 0) {
+	// do not decrement quantities if products_attributes_filename exists
+	if ((DOWNLOAD_ENABLED != 'true') || $stock_values->fields['product_is_always_free_shipping'] == 2 || (!$stock_values->fields['products_attributes_filename']) ) {
+	  $stock_left = $stock_values->fields['products_quantity'] - $product['qty'];
+	  $product['stock_reduce'] = $product['qty'];
+	} else {
+	  $stock_left = $stock_values->fields['products_quantity'];
+	}
+
+	//            $product['stock_value'] = $stock_values->fields['products_quantity'];
+
+	$db->Execute("update " . TABLE_PRODUCTS . " set products_quantity = '" . $stock_left . "' where products_id = '" . zen_get_prid($product['id']) . "'");
+	//        if ( ($stock_left < 1) && (STOCK_ALLOW_CHECKOUT == 'false') ) {
+	if ($stock_left < 1) {
+	  // only set status to off when not displaying sold out
+	  if (SHOW_PRODUCTS_SOLD_OUT == '0') {
+	    $db->Execute("update " . TABLE_PRODUCTS . " set products_status = 0 where products_id = '" . zen_get_prid($product['id']) . "'");
+	  }
+	}
+
+	// for low stock email
+	if ( $stock_left <= STOCK_REORDER_LEVEL ) {
+	  // WebMakers.com Added: add to low stock email
+	  $this->email_low_stock .=  'ID# ' . zen_get_prid($product['id']) . "\t\t" . $product['model'] . "\t\t" . $product['name'] . "\t\t" . ' Qty Left: ' . $stock_left . "\n";
+	}
+      }
+    }
+
+    // Update products_ordered (for bestsellers list)
+    //    $db->Execute("update " . TABLE_PRODUCTS . " set products_ordered = products_ordered + " . sprintf('%d', $order->products[$i]['qty']) . " where products_id = '" . zen_get_prid($order->products[$i]['id']) . "'");
+    $db->Execute("update " . TABLE_PRODUCTS . " set products_ordered = products_ordered + " . sprintf('%f', $this->products[$i]['qty']) . " where products_id = '" . zen_get_prid($this->products[$i]['id']) . "'");
+  }
 
   function  create_add_products($zf_insert_id, $zf_mode = false) {
     global $db, $currencies, $order_total_modules, $order_totals, $zco_notifier;
@@ -614,60 +683,7 @@ class order extends base {
 
     for ($i=0, $n=sizeof($this->products); $i<$n; $i++) {
       // Stock Update - Joao Correia
-      if (STOCK_LIMITED == 'true') {
-        if (DOWNLOAD_ENABLED == 'true') {
-          $stock_query_raw = "select p.products_quantity, pad.products_attributes_filename, p.product_is_always_free_shipping
-                              from " . TABLE_PRODUCTS . " p
-                              left join " . TABLE_PRODUCTS_ATTRIBUTES . " pa
-                               on p.products_id=pa.products_id
-                              left join " . TABLE_PRODUCTS_ATTRIBUTES_DOWNLOAD . " pad
-                               on pa.products_attributes_id=pad.products_attributes_id
-                              WHERE p.products_id = '" . zen_get_prid($this->products[$i]['id']) . "'";
-
-          // Will work with only one option for downloadable products
-          // otherwise, we have to build the query dynamically with a loop
-          $products_attributes = $this->products[$i]['attributes'];
-          if (is_array($products_attributes)) {
-            $stock_query_raw .= " AND pa.options_id = '" . $products_attributes[0]['option_id'] . "' AND pa.options_values_id = '" . $products_attributes[0]['value_id'] . "'";
-          }
-          $stock_values = $db->Execute($stock_query_raw);
-        } else {
-          $stock_values = $db->Execute("select * from " . TABLE_PRODUCTS . " where products_id = '" . zen_get_prid($this->products[$i]['id']) . "'");
-        }
-
-        $zco_notifier->notify('NOTIFY_ORDER_PROCESSING_STOCK_DECREMENT_BEGIN');
-
-        if ($stock_values->RecordCount() > 0) {
-          // do not decrement quantities if products_attributes_filename exists
-          if ((DOWNLOAD_ENABLED != 'true') || $stock_values->fields['product_is_always_free_shipping'] == 2 || (!$stock_values->fields['products_attributes_filename']) ) {
-            $stock_left = $stock_values->fields['products_quantity'] - $this->products[$i]['qty'];
-            $this->products[$i]['stock_reduce'] = $this->products[$i]['qty'];
-          } else {
-            $stock_left = $stock_values->fields['products_quantity'];
-          }
-
-          //            $this->products[$i]['stock_value'] = $stock_values->fields['products_quantity'];
-
-          $db->Execute("update " . TABLE_PRODUCTS . " set products_quantity = '" . $stock_left . "' where products_id = '" . zen_get_prid($this->products[$i]['id']) . "'");
-          //        if ( ($stock_left < 1) && (STOCK_ALLOW_CHECKOUT == 'false') ) {
-          if ($stock_left < 1) {
-            // only set status to off when not displaying sold out
-            if (SHOW_PRODUCTS_SOLD_OUT == '0') {
-              $db->Execute("update " . TABLE_PRODUCTS . " set products_status = 0 where products_id = '" . zen_get_prid($this->products[$i]['id']) . "'");
-            }
-          }
-
-          // for low stock email
-          if ( $stock_left <= STOCK_REORDER_LEVEL ) {
-            // WebMakers.com Added: add to low stock email
-            $this->email_low_stock .=  'ID# ' . zen_get_prid($this->products[$i]['id']) . "\t\t" . $this->products[$i]['model'] . "\t\t" . $this->products[$i]['name'] . "\t\t" . ' Qty Left: ' . $stock_left . "\n";
-          }
-        }
-      }
-
-      // Update products_ordered (for bestsellers list)
-      //    $db->Execute("update " . TABLE_PRODUCTS . " set products_ordered = products_ordered + " . sprintf('%d', $order->products[$i]['qty']) . " where products_id = '" . zen_get_prid($order->products[$i]['id']) . "'");
-      $db->Execute("update " . TABLE_PRODUCTS . " set products_ordered = products_ordered + " . sprintf('%f', $this->products[$i]['qty']) . " where products_id = '" . zen_get_prid($this->products[$i]['id']) . "'");
+      $this->order_parts($this->products[$i]);
 
       $zco_notifier->notify('NOTIFY_ORDER_PROCESSING_STOCK_DECREMENT_END');
 

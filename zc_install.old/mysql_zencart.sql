@@ -1335,6 +1335,20 @@ CREATE TABLE products (
   KEY idx_products_date_added_zen (products_date_added),
   KEY idx_products_status_zen (products_status)
 ) TYPE=MyISAM;
+
+# --------------------------------------------------------
+
+#
+# Table structure for table products_parts
+#
+
+DROP TABLE IF EXISTS products_parts;
+CREATE TABLE products_parts (
+  product int(11) NOT NULL default '0',
+  amount int(11) NOT NULL default '1',
+  product_part int(11) NOT NULL default '0'
+) TYPE=MyISAM;
+
 # --------------------------------------------------------
 
 #

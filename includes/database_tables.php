@@ -65,6 +65,7 @@ define('TABLE_PAYPAL_SESSION', DB_PREFIX . 'paypal_session');
 define('TABLE_PAYPAL_PAYMENT_STATUS', DB_PREFIX . 'paypal_payment_status');
 define('TABLE_PAYPAL_PAYMENT_STATUS_HISTORY', DB_PREFIX . 'paypal_payment_status_history');
 define('TABLE_PRODUCTS', DB_PREFIX . 'products');
+define('TABLE_PRODUCTS_PARTS', DB_PREFIX . 'products_parts');
 define('TABLE_PRODUCT_TYPES', DB_PREFIX . 'product_types');
 define('TABLE_PRODUCT_TYPE_LAYOUT', DB_PREFIX . 'product_type_layout');
 define('TABLE_PRODUCT_TYPES_TO_CATEGORY', DB_PREFIX . 'product_types_to_category');
