@@ -1197,6 +1197,9 @@
     $db->Execute("delete from " . TABLE_PRODUCTS . "
                   where products_id = '" . (int)$product_id . "'");
 
+    $db->Execute("delete from " . TABLE_PRODUCTS_PARTS . "
+                  where product = '" . (int)$product_id . "' or product_part = '" . (int)$product_id . "'");
+
 //    if ($ptc == 'true') {
       $db->Execute("delete from " . TABLE_PRODUCTS_TO_CATEGORIES . "
                     where products_id = '" . (int)$product_id . "'");
