@@ -378,7 +378,13 @@ if (($_GET['page'] == '1' or $_GET['page'] == '') and $_GET['pID'] != '') {
                     <td align="right" class="smallText"><?php if (sizeof($cPath_array) > 0) echo '<a href="' . zen_href_link(FILENAME_CATEGORIES, $cPath_back . 'cID=' . $current_category_id) . '">' . zen_image_button('button_back.gif', IMAGE_BACK) . '</a>&nbsp;'; if (!isset($_GET['search'])) echo (!$zc_skip_categories ? '<a href="' . zen_href_link(FILENAME_CATEGORIES, 'cPath=' . $cPath . '&action=new_category') . '">' . zen_image_button('button_new_category.gif', IMAGE_NEW_CATEGORY) . '</a>&nbsp;' : ''); ?>
 
 <?php if ($zc_skip_products == false) { ?>
-<form name="newproduct" action="<?php echo zen_href_link(FILENAME_CATEGORIES, '', 'NONSSL'); ?>" method = "get"><?php    echo zen_image_submit('button_new_product.gif', IMAGE_NEW_PRODUCT); ?>
+<form name="newproduct" action="<?php echo zen_href_link(FILENAME_CATEGORIES, '', 'NONSSL'); ?>" method = "get">
+ <?php
+   echo '<a href="' . zen_href_link(FILENAME_IMPORT, 'cPath=' . $cPath) . '">';
+   echo zen_image_button('button_import.gif', IMAGE_IMPORT);
+   echo '</a>&nbsp;';
+   echo zen_image_submit('button_new_product.gif', IMAGE_NEW_PRODUCT);
+ ?>
 <?php
   $sql = "select ptc.product_type_id, pt.type_name from " . TABLE_PRODUCT_TYPES_TO_CATEGORY . " ptc, " . TABLE_PRODUCT_TYPES . " pt
           where ptc.category_id = '" . $current_category_id . "'

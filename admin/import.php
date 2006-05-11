@@ -99,20 +99,39 @@ switch($action) {
      'metatags_title_tagline_status' => 0,
     );
    $products_default_keys = array_keys($products_default_map);
-   $products_description_default_map = array('products_name' => 0,
-			                     'products_description' => 0,
-                                             'products_url' => 0
-			     );
+   $products_description_default_map = array('products_name' => false,
+			                     'products_description' => false,
+                                             'products_url' => false
+					     );
    $products_description_default_keys = array_keys($products_description_default_map);
    while (($data = fgetcsv($file)) !== FALSE) {
     $data = array_combine($keys, array_map(zen_db_prepare_input, $data));
-
     $products_data = array_merge($products_default_map, array_intersect_key($data, $products_default_map));
 
+    $categories = array();
+    if (isset($data['categories'])) {
+      $category_names = explode(', ', $data['categories']);
+      foreach($category_names as $category_name) {
+        $line = $db->Execute("select categories_id from categories_description where categories_name = '{$category_name}'");
+        if ($line->RecordCount() > 0) {
+          if ($line->RecordCount() > 1)
+	    $messageStack->add("Category name '{$category_name}' is ambigous", 'warning');
+	  $categories[] = $line->fields['categories_id'];
+        } else
+	  $messageStack->add("Unable to find the category named '{$category_name}'", 'error');
+      }
+    } else {
+      $categories = array($current_category_id);
+    }
+    $products_data['master_categories_id'] = $categories[0];
+    
     zen_db_perform(TABLE_PRODUCTS, $products_data);
     $products_id = zen_db_insert_id();
     zen_update_products_price_sorter($products_id);
-    zen_db_perform(TABLE_PRODUCTS_TO_CATEGORIES, array('products_id' => $products_id, 'categories_id' => 1));
+
+    foreach ($categories as $category) {
+      zen_db_perform(TABLE_PRODUCTS_TO_CATEGORIES, array('products_id' => $products_id, 'categories_id' => $category));
+    }
 
     $products_description_data = array_intersect_key($data, $products_description_default_map);
     if ($products_description_data) {
@@ -191,7 +210,7 @@ switch($action) {
             <td colspan="3" class="main" align="left" valign="middle"><?php echo TEXT_IMPORT_PRODUCTS; ?></td>
           </tr>
 
-          <tr><form name = "locate_configure" action="<?php echo zen_href_link(FILENAME_IMPORT, 'action=import_products', 'NONSSL'); ?>"' method="post" enctype="multipart/form-data">
+          <tr><form name = "locate_configure" action="<?php echo zen_href_link(FILENAME_IMPORT, "action=import_products&cPath={$_GET['cPath']}", 'NONSSL'); ?>"' method="post" enctype="multipart/form-data">
             <td class="main" align="left" valign="bottom"><?php echo '<strong>' . TEXT_IMPORT_PRODUCTS_FIELD . '</strong>' . '<br />' . zen_draw_file_field('import_products_products', true); ?></td>
             <td class="main" align="right" valign="bottom"><?php echo zen_image_submit('button_import.gif', IMAGE_IMPORT); ?></td>
           </form></tr>

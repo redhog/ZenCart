@@ -160,7 +160,6 @@ define('BOX_TOOLS_SERVER_INFO', 'Server Info');
 define('BOX_TOOLS_WHOS_ONLINE', 'Who\'s Online');
 define('BOX_TOOLS_STORE_MANAGER', 'Store Manager');
 define('BOX_TOOLS_DEVELOPERS_TOOL_KIT', 'Developers Tool Kit');
-define('BOX_TOOLS_IMPORT', 'Import');
 define('BOX_TOOLS_SQLPATCH','Install SQL Patches');
 define('BOX_TOOLS_EZPAGES','EZ-Pages');
 
