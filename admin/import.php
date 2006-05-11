@@ -29,6 +29,30 @@ if (!is_writeable(DIR_FS_IMPORT)) {
 
 $import_result = array();
 
+function getCategoryByPathStr($parent, $path) {
+  if ($path == '')
+    return $parent;
+  return getCategoryByPath($parent, explode("/", $path));
+}
+
+function getCategoryByPath($parent, $path) {
+  global $db, $messageStack;
+  foreach ($path as $item) {
+    $line = $db->Execute("select categories_description.categories_id as categories_id " .
+                         "from categories, categories_description " .
+                         "where categories_description.categories_name = '{$item}' " .
+                         "and categories.categories_id = categories_description.categories_id " .
+                         "and categories.parent_id = '{$parent}'");
+    if ($line->RecordCount() > 0) {
+      if ($line->RecordCount() > 1)
+	$messageStack->add("Category name '{$item}' is ambigous", 'warning');
+      $parent = $line->fields['categories_id'];
+    } else
+      $messageStack->add("Unable to find the category named '{$item}'", 'error');
+  }
+  return $parent;
+}
+
 switch($action) {
  case ('import_products'):
 
@@ -68,6 +92,40 @@ switch($action) {
   }
 
   unlink($products->file['tmp_name']);  
+
+  if ($file = fopen(DIR_FS_IMPORT . 'categories.csv', 'r')) {
+    $import_result[] = 'Impored categories from categories.csv';
+    $keys = fgetcsv($file);
+
+    $categories_default_map = array();
+    $categories_default_keys = array_keys($categories_default_map);
+
+    $categories_description_default_map = array(
+      'categories_name' => false,
+      'categories_description' => false,
+     );
+    $categories_description_default_keys = array_keys($categories_description_default_map);
+
+    while (($data = fgetcsv($file)) !== FALSE) {
+      $data = array_combine($keys, array_map(zen_db_prepare_input, $data));
+      $path = explode('/', $data['path']);
+      $name = $path[count($path)-1];
+      unset($path[count($path)-1]);
+
+      $categories_data = array_merge($categories_default_map, array_intersect_key($data, $categories_default_map));
+      $categories_data['parent_id'] = getCategoryByPath($current_category_id, $path);
+      zen_db_perform(TABLE_CATEGORIES, $categories_data);
+      $categories_id = zen_db_insert_id();
+
+      $categories_description_data = array_merge($categories_description_default_map, array_intersect_key($data, $categories_description_default_map));
+      $categories_description_data["categories_id"] = $categories_id;
+      $categories_description_data['categories_name'] = $name;
+
+      zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, $categories_description_data);
+
+      $import_result[] = "Added category '" . $data['path'] . "' #" . $categories_id;
+    }
+  }
 
   if ($file = fopen(DIR_FS_IMPORT . 'products.csv', 'r')) {
    $import_result[] = 'Impored products from products.csv';
@@ -112,15 +170,9 @@ switch($action) {
 
     $categories = array();
     if (isset($data['categories'])) {
-      $category_names = explode(', ', $data['categories']);
-      foreach($category_names as $category_name) {
-        $line = $db->Execute("select categories_id from categories_description where categories_name = '{$category_name}'");
-        if ($line->RecordCount() > 0) {
-          if ($line->RecordCount() > 1)
-	    $messageStack->add("Category name '{$category_name}' is ambigous", 'warning');
-	  $categories[] = $line->fields['categories_id'];
-        } else
-	  $messageStack->add("Unable to find the category named '{$category_name}'", 'error');
+      $category_paths = explode(',', $data['categories']);
+      foreach($category_paths as $category_path) {
+        $categories[] = getCategoryByPathStr($current_category_id, $category_path);
       }
     } else {
       $categories = array($current_category_id);
@@ -168,12 +220,12 @@ switch($action) {
    fclose($file);
   }
 
-  if ($dir = opendir(DIR_FS_IMPORT . 'pictures/')) {
-   $import_result[] = 'Importing pictures from pictures/';
+  if ($dir = opendir(DIR_FS_IMPORT . 'products/')) {
+   $import_result[] = 'Importing pictures from products/';
    while (($file = readdir($dir)) !== false) {
     if ($file == '.' || $file == '..') continue;
     $model = substr($file, 0, strrpos($file, '.'));
-    rename(DIR_FS_IMPORT . 'pictures/' . $file, DIR_FS_CATALOG_IMAGES . $file);
+    rename(DIR_FS_IMPORT . 'products/' . $file, DIR_FS_CATALOG_IMAGES . $file);
     zen_db_perform(TABLE_PRODUCTS, array('products_image' => $file), 'update', 'products_model = "' . $model . '"');
     $import_result[] = "Added picture '" . $file . "' fo '" . $model . "'.";
    }
