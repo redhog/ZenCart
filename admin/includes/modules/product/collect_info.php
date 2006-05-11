@@ -108,8 +108,8 @@ if (!defined('IS_ADMIN_FLAG')) {
 			       and products_description.language_id = '" . (int)$_SESSION['languages_id'] . "'");
 	if ($parts->RecordCount() != 0) {
  	  $products_parts[$parts->fields['products_id']] = $parts->fields;
-	  $products_parts[$parts->fields['products_id']]['amount'] = 1;
-	  $products_parts[$parts->fields['products_id']]['visible'] = 1;
+	  $products_parts[$parts->fields['products_id']]['amount'] = $parameters['products_new_part_amount'];
+	  $products_parts[$parts->fields['products_id']]['visible'] = isset($parameters['products_new_part_visible']);
         }
       }
 
@@ -499,13 +499,14 @@ updateGross();
 		  echo "<td>" . zen_image_submit('button_delete.gif', IMAGE_DELETE, "name='products_part__{$part['products_id']}__delete' value='1'") . "</td>";
 		  echo "</tr>";
 		 }
-		?>
-	       </table>
-               <table><tr>
-	        <?php
+	         echo "<td>" . zen_draw_input_field("products_new_part_amount", '1') . "</td>";
                  echo "<td>" . zen_draw_input_field('products_new_part_model', '') . "</td>";
-                 echo "<td>" . zen_image_submit('button_search.gif', IMAGE_SEARCH, "name='products_search_part' value='1'") . "</td>";
-                 echo "<td>" . zen_image_submit('button_insert.gif', IMAGE_INSERT, "name='products_add_part' value='1'") . "</td>";
+                 echo "<td></td>";
+                 echo "<td>" . zen_draw_checkbox_field("products_new_part_visible", 'on', 1) . "</td>";
+                 echo "<td>";
+                 echo zen_image_submit('button_insert.gif', IMAGE_INSERT, "name='products_add_part' value='1'");
+                 echo zen_image_submit('button_search.gif', IMAGE_SEARCH, "name='products_search_part' value='1'");
+                 echo "</td>";
  	        ?>
                </tr></table>
 	      </td>
