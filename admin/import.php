@@ -126,6 +126,22 @@ switch($action) {
       $categories = array($current_category_id);
     }
     $products_data['master_categories_id'] = $categories[0];
+
+    $parts = array();
+    if (isset($data['parts']) && $data['parts'] != '') {
+      $part_exprs = explode(',', $data['parts']);
+      foreach($part_exprs as $part_expr) {
+        $part_items = explode("|", $part_expr);
+        $part_model = $part_items[0];
+        $line = $db->Execute("select products_id from products where products_model = '{$part_model}'");
+        if ($line->RecordCount() > 0) {
+          if ($line->RecordCount() > 1)
+	    $messageStack->add("Part part number '{$part_model}' is ambigous", 'warning');
+	  $parts[] = array('product_part' => $line->fields['products_id'], 'amount' => isset($part_items[1]) ? $part_items[1] : 1, 'visible' => isset($part_items[2]) ? $part_items[2] : 1);
+        } else
+	  $messageStack->add("Unable to find the part with part number '{$part_model}'", 'error');
+      }
+    }
     
     zen_db_perform(TABLE_PRODUCTS, $products_data);
     $products_id = zen_db_insert_id();
@@ -133,6 +149,11 @@ switch($action) {
 
     foreach ($categories as $category) {
       zen_db_perform(TABLE_PRODUCTS_TO_CATEGORIES, array('products_id' => $products_id, 'categories_id' => $category));
+    }
+
+    foreach ($parts as $part) {
+      $part["product"] = $products_id;
+      zen_db_perform(TABLE_PRODUCTS_PARTS, $part);
     }
 
     $products_description_data = array_intersect_key($data, $products_description_default_map);
