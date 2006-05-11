@@ -19,6 +19,7 @@
   define('HEADING_TITLE', 'Import data into ZenCart');
   define('HEADING_HELP', 'Please see documentation for details of the import formats');
 
+  define('TEXT_IMPORT_PRODUCT_RESULTS', '<strong>Import results</strong>');
   define('TEXT_IMPORT_PRODUCTS', '<strong>Import products</strong>');
   define('TEXT_IMPORT_PRODUCTS_FIELD', 'Zip-file with "products.csv" and image directory "images"');
 ?>

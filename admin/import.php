@@ -27,6 +27,8 @@ if (!is_writeable(DIR_FS_IMPORT)) {
  $messageStack->add("Unable to write to " . DIR_FS_IMPORT, 'error');
 }
 
+$import_result = array();
+
 switch($action) {
  case ('import_products'):
 
@@ -68,7 +70,7 @@ switch($action) {
   unlink($products->file['tmp_name']);  
 
   if ($file = fopen(DIR_FS_IMPORT . 'products.csv', 'r')) {
-   $messageStack->add('Importing products from products.csv', 'success');
+   $import_result[] = 'Impored products from products.csv';
    $keys = fgetcsv($file);
 
    $products_default_map = array(
@@ -140,19 +142,19 @@ switch($action) {
      zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $products_description_data);
      $products_description_id = zen_db_insert_id();
     }
-    $messageStack->add("Added product '" . $products_data['products_model'] . "' #" . $products_id, 'success');
+    $import_result[] = "Added product '" . $products_data['products_model'] . "' #" . $products_id;
    }
    fclose($file);
   }
 
   if ($dir = opendir(DIR_FS_IMPORT . 'pictures/')) {
-   $messageStack->add('Importing pictures from pictures/', 'success');
+   $import_result[] = 'Importing pictures from pictures/';
    while (($file = readdir($dir)) !== false) {
     if ($file == '.' || $file == '..') continue;
     $model = substr($file, 0, strrpos($file, '.'));
     rename(DIR_FS_IMPORT . 'pictures/' . $file, DIR_FS_CATALOG_IMAGES . $file);
     zen_db_perform(TABLE_PRODUCTS, array('products_image' => $file), 'update', 'products_model = "' . $model . '"');
-    $messageStack->add("Added picture '" . $file . "' fo '" . $model . "'.", "success");
+    $import_result[] = "Added picture '" . $file . "' fo '" . $model . "'.";
    }
    closedir($dir);
   }
@@ -203,6 +205,21 @@ switch($action) {
         <td colspan="2"><?php echo HEADING_HELP; ?></td>
       </tr>
 
+<?php if ($action == 'import_products') { ?>
+      <tr>
+        <td colspan="2">
+         <?php echo TEXT_IMPORT_PRODUCT_RESULTS; ?><br />
+         <ul>
+          <?php
+            foreach ($import_result as $resultline) {
+              echo "<li>{$resultline}</li>";
+            }
+          ?>
+         </ul>
+        </td>
+      </tr>
+<?php } ?>
+
 <!-- bof: Import -->
       <tr>
         <td colspan="2"><br /><table border="0" cellspacing="0" cellpadding="2">
@@ -211,8 +228,9 @@ switch($action) {
           </tr>
 
           <tr><form name = "locate_configure" action="<?php echo zen_href_link(FILENAME_IMPORT, "action=import_products&cPath={$_GET['cPath']}", 'NONSSL'); ?>"' method="post" enctype="multipart/form-data">
-            <td class="main" align="left" valign="bottom"><?php echo '<strong>' . TEXT_IMPORT_PRODUCTS_FIELD . '</strong>' . '<br />' . zen_draw_file_field('import_products_products', true); ?></td>
+            <td class="main" align="left" valign="bottom"><?php echo '<strong>' . TEXT_IMPORT_PRODUCTS_FIELD . '</strong>' . '<br />' . zen_draw_file_field('import_products_products'); ?></td>
             <td class="main" align="right" valign="bottom"><?php echo zen_image_submit('button_import.gif', IMAGE_IMPORT); ?></td>
+            <td class="main" align="right" valign="bottom"><?php echo "<a href='" . zen_href_link(FILENAME_CATEGORIES, "cPath={$cPath}") . "'>" . zen_image_button('button_back.gif', IMAGE_BACK) . "</a>"; ?></td>
           </form></tr>
         </table></td>
       </tr>
