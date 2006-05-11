@@ -104,7 +104,6 @@ define('TEXT_PRODUCTS_DESCRIPTION', 'Products Description:');
 define('TEXT_PRODUCTS_QUANTITY', 'Products Quantity:');
 define('TEXT_PRODUCTS_MODEL', 'Products Model:');
 define('TEXT_PRODUCTS_PARTS', 'Parts sold separately:');
-define('TEXT_PRODUCTS_PARTS_HELP', 'Model numbers separated by ','');
 define('TEXT_PRODUCTS_IMAGE', 'Products Image:');
 define('TEXT_PRODUCTS_IMAGE_DIR', 'Upload to directory:');
 define('TEXT_PRODUCTS_URL', 'Products URL:');
@@ -198,5 +197,11 @@ define('TEXT_COPY_AS_DUPLICATE', 'Duplicate product');
   define('TEXT_META_TAGS_KEYWORDS','<strong>Meta Tag Keywords:</strong>');
   define('TEXT_META_TAGS_DESCRIPTION','<strong>Meta Tag Description:</strong>');
   define('TEXT_META_EXCLUDED', '<span class="alert">EXCLUDED</span>');
+
+// Kit parts
+  define('TABLE_HEADING_QUANTITY', 'Quantity');
+  define('TABLE_HEADING_NAME', 'Name');
+  define('TABLE_HEADING_VISIBLE', 'Visible');
+  define('TABLE_HEADING_ACTIONS', 'Actions');
 
 ?>

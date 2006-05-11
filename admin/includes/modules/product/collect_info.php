@@ -480,15 +480,15 @@ updateGross();
             <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_model', $pInfo->products_model, zen_set_field_length(TABLE_PRODUCTS, 'products_model')); ?></td>
           </tr>
           <tr>
-            <td class="main" valign="top"><?php echo TEXT_PRODUCTS_PARTS . '<br /><small>' . TEXT_PRODUCTS_PARTS_HELP . '</small>'; ?></td>
+            <td class="main" valign="top"><?php echo TEXT_PRODUCTS_PARTS; ?></td>
             <td class="main">
              <table border="0" cellspacing="0" cellpadding="0">
               <tr>
 	       <td><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;'; ?></td>
 	       <td>
 		<table>
-		 <tr><th>Quantity</th><th>Part #</th><th>Name</th><th>Visible</th><th>Actions</th></tr>
 		 <?php
+                 echo "<tr><th>" . TABLE_HEADING_QUANTITY ."</th><th>" . TABLE_HEADING_MODEL ."</th><th>" . TABLE_HEADING_NAME ."</th><th>" . TABLE_HEADING_VISIBLE ."</th><th>" . TABLE_HEADING_ACTIONS ."</th></tr>";
 		 foreach ($pInfo->products_parts as $part) {
                   echo zen_draw_hidden_field("products_part__{$part['products_id']}__products_model", $part["products_model"]);
                   echo zen_draw_hidden_field("products_part__{$part['products_id']}__products_name", $part["products_name"]);
