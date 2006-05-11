@@ -137,7 +137,7 @@ if (!defined('IS_ADMIN_FLAG')) {
 /* Re-Post all POST'ed variables */
       reset($_POST);
       while (list($key, $value) = each($_POST)) {
-        if (!is_array($_POST[$key])) {
+        if (!is_array($_POST[$key]) && $key != 'action') {
           echo zen_draw_hidden_field($key, htmlspecialchars(stripslashes($value)));
         }
       }

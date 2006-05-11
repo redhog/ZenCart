@@ -71,6 +71,27 @@
       zen_db_perform(TABLE_PRODUCTS, $sql_data_array);
       $products_id = zen_db_insert_id();
 
+      // Insert parts for kits
+      $products_parts = array();
+      foreach ($_POST as $key => $value) {
+        // name is products_part__PRODUCTID__fieldname
+        if (strncmp($key, "products_part__", strlen("products_part__")) == 0) {
+          $keyparts = explode('__', $key);
+	  if ($keyparts[2] == 'visible') $value = 1;
+	  if (!isset($products_parts[$keyparts[1]]))
+	    $products_parts[$keyparts[1]] = array('products_id' => $keyparts[1], 'visible' => 0);
+	  $products_parts[$keyparts[1]][$keyparts[2]] = $value;
+	}
+      }
+      foreach ($products_parts as $part) {
+        $sql = array();
+        $sql["product"] = (int) $products_id;
+	$sql["product_part"] = $part["products_id"];
+	$sql["amount"] = $part["amount"];
+	$sql["visible"] = $part["visible"];
+	zen_db_perform(TABLE_PRODUCTS_PARTS, $sql, 'insert');
+      }
+
       // reset products_price_sorter for searches etc.
       zen_update_products_price_sorter($products_id);
 
@@ -91,6 +112,28 @@
       $sql_data_array = array_merge($sql_data_array, $update_sql_data);
 
       zen_db_perform(TABLE_PRODUCTS, $sql_data_array, 'update', "products_id = '" . (int)$products_id . "'");
+
+      // Update parts for kits
+      $products_parts = array();
+      foreach ($_POST as $key => $value) {
+        // name is products_part__PRODUCTID__fieldname
+        if (strncmp($key, "products_part__", strlen("products_part__")) == 0) {
+          $keyparts = explode('__', $key);
+	  if ($keyparts[2] == 'visible') $value = 1;
+	  if (!isset($products_parts[$keyparts[1]]))
+	    $products_parts[$keyparts[1]] = array('products_id' => $keyparts[1], 'visible' => 0);
+	  $products_parts[$keyparts[1]][$keyparts[2]] = $value;
+	}
+      }
+      $db->Execute("delete from " . TABLE_PRODUCTS_PARTS . " where product = '" . (int)$products_id . "'");
+      foreach ($products_parts as $part) {
+        $sql = array();
+        $sql["product"] = (int) $products_id;
+	$sql["product_part"] = $part["products_id"];
+	$sql["amount"] = $part["amount"];
+	$sql["visible"] = $part["visible"];
+	zen_db_perform(TABLE_PRODUCTS_PARTS, $sql, 'insert');
+      }
 
       // reset products_price_sorter for searches etc.
       zen_update_products_price_sorter((int)$products_id);

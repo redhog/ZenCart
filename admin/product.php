@@ -24,7 +24,8 @@
 
   require(DIR_WS_MODULES . 'prod_cat_header_code.php');
 
-  $action = (isset($_GET['action']) ? $_GET['action'] : '');
+  // POST overrides GET to allow for more elaborate widgets in e.g. collect_info.php
+  $action = (isset($_POST['action']) ? $_POST['action'] : (isset($_GET['action']) ? $_GET['action'] : ''));
 
   if (zen_not_null($action)) {
     switch ($action) {

@@ -103,6 +103,8 @@ define('TEXT_PRODUCTS_NAME', 'Products Name:');
 define('TEXT_PRODUCTS_DESCRIPTION', 'Products Description:');
 define('TEXT_PRODUCTS_QUANTITY', 'Products Quantity:');
 define('TEXT_PRODUCTS_MODEL', 'Products Model:');
+define('TEXT_PRODUCTS_PARTS', 'Parts sold separately:');
+define('TEXT_PRODUCTS_PARTS_HELP', 'Model numbers separated by ','');
 define('TEXT_PRODUCTS_IMAGE', 'Products Image:');
 define('TEXT_PRODUCTS_IMAGE_DIR', 'Upload to directory:');
 define('TEXT_PRODUCTS_URL', 'Products URL:');

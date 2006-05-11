@@ -15,6 +15,7 @@ if (!defined('IS_ADMIN_FLAG')) {
                        'products_id' => '',
                        'products_quantity' => '',
                        'products_model' => '',
+		       'products_parts' => array(),
                        'products_image' => '',
                        'products_price' => '',
                        'products_virtual' => DEFAULT_PRODUCT_PRODUCTS_VIRTUAL,
@@ -61,10 +62,60 @@ if (!defined('IS_ADMIN_FLAG')) {
                               where p.products_id = '" . (int)$_GET['pID'] . "'
                               and p.products_id = pd.products_id
                               and pd.language_id = '" . (int)$_SESSION['languages_id'] . "'");
+      $parameters = $product->fields;
 
-      $pInfo->objectInfo($product->fields);
+      $parts = $db->Execute("select products_parts.*, products.*, products_description.*
+                             from " . TABLE_PRODUCTS_PARTS . " as products_parts, " . TABLE_PRODUCTS . " as products, " . TABLE_PRODUCTS_DESCRIPTION . " as products_description
+                             where products_parts.product = '" . (int)$_GET['pID'] . "'
+                             and products.products_id = products_parts.product_part
+                             and products_description.products_id = products_parts.product_part
+                             and products_description.language_id = '" . (int)$_SESSION['languages_id'] . "'");
+      $products_parts = array();
+      while (!$parts->EOF) {
+        $products_parts[$parts->fields['products_id']] = $parts->fields;
+        $parts->MoveNext();
+      }
+      $parameters['products_parts'] = $products_parts;
+
+      $pInfo->objectInfo($parameters);
     } elseif (zen_not_null($_POST)) {
-      $pInfo->objectInfo($_POST);
+      $parameters = $_POST;
+
+      $products_parts = array();
+      $delete_parts = array();
+      foreach ($parameters as $key => $value) {
+        // name is products_part__PRODUCTID__fieldname
+        if (strncmp($key, "products_part__", strlen("products_part__")) == 0) {
+          $keyparts = explode('__', $key);
+          if ($keyparts[2] == 'delete') {
+ 	    $delete_parts[] = $keyparts[1];
+ 	  } else {
+	    if ($keyparts[2] == 'visible') $value = 1;
+   	    if (!isset($products_parts[$keyparts[1]]))
+	      $products_parts[$keyparts[1]] = array('products_id' => $keyparts[1], 'visible' => 0);
+	    $products_parts[$keyparts[1]][$keyparts[2]] = $value;
+	  }
+        }
+      }
+      foreach ($delete_parts as $part)
+        unset($products_parts[$part]);
+
+      if (isset($_POST['products_add_part'])) {
+	$parts = $db->Execute("select products.*, products_description.*
+			       from " . TABLE_PRODUCTS . " as products, " . TABLE_PRODUCTS_DESCRIPTION . " as products_description
+			       where products.products_model = '" . $parameters['products_new_part_model'] . "'
+			       and products_description.products_id = products.products_id
+			       and products_description.language_id = '" . (int)$_SESSION['languages_id'] . "'");
+	if ($parts->RecordCount() != 0) {
+ 	  $products_parts[$parts->fields['products_id']] = $parts->fields;
+	  $products_parts[$parts->fields['products_id']]['amount'] = 1;
+	  $products_parts[$parts->fields['products_id']]['visible'] = 1;
+        }
+      }
+
+      $parameters['products_parts'] = $products_parts;
+
+      $pInfo->objectInfo($parameters);
       $products_name = $_POST['products_name'];
       $products_description = $_POST['products_description'];
       $products_url = $_POST['products_url'];
@@ -213,7 +264,8 @@ function updateNet() {
 //--></script>
     <?php
 //  echo $type_admin_handler;
-echo zen_draw_form('new_product', $type_admin_handler , 'cPath=' . $cPath . (isset($_GET['product_type']) ? '&product_type=' . $_GET['product_type'] : '') . (isset($_GET['pID']) ? '&pID=' . $_GET['pID'] : '') . '&action=new_product_preview' . (isset($_GET['page']) ? '&page=' . $_GET['page'] : ''), 'post', 'enctype="multipart/form-data"'); ?>
+//  We set action to go back to this page here, and override it with the submit button (POST overrides GET in admin/product.php
+echo zen_draw_form('new_product', $type_admin_handler , 'cPath=' . $cPath . (isset($_GET['product_type']) ? '&product_type=' . $_GET['product_type'] : '') . (isset($_GET['pID']) ? '&pID=' . $_GET['pID'] : '') . '&action=new_product' . (isset($_GET['page']) ? '&page=' . $_GET['page'] : ''), 'post', 'enctype="multipart/form-data"'); ?>
 
     <table border="0" width="100%" cellspacing="0" cellpadding="2">
       <tr>
@@ -228,7 +280,7 @@ echo zen_draw_form('new_product', $type_admin_handler , 'cPath=' . $cPath . (iss
         <td><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
       </tr>
       <tr>
-        <td class="main" align="right"><?php echo zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) . zen_image_submit('button_preview.gif', IMAGE_PREVIEW) . '&nbsp;&nbsp;<a href="' . zen_href_link(FILENAME_CATEGORIES, 'cPath=' . $cPath . (isset($_GET['pID']) ? '&pID=' . $_GET['pID'] : '') . (isset($_GET['page']) ? '&page=' . $_GET['page'] : '')) . '">' . zen_image_button('button_cancel.gif', IMAGE_CANCEL) . '</a>'; ?></td>
+        <td class="main" align="right"><?php echo zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) . zen_image_submit('button_preview.gif', IMAGE_PREVIEW, "name='action' value='new_product_preview'") . '&nbsp;&nbsp;<a href="' . zen_href_link(FILENAME_CATEGORIES, 'cPath=' . $cPath . (isset($_GET['pID']) ? '&pID=' . $_GET['pID'] : '') . (isset($_GET['page']) ? '&page=' . $_GET['page'] : '')) . '">' . zen_image_button('button_cancel.gif', IMAGE_CANCEL) . '</a>'; ?></td>
       </tr>
       <tr>
         <td><table border="0" cellspacing="0" cellpadding="2">
@@ -428,6 +480,40 @@ updateGross();
             <td class="main"><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;' . zen_draw_input_field('products_model', $pInfo->products_model, zen_set_field_length(TABLE_PRODUCTS, 'products_model')); ?></td>
           </tr>
           <tr>
+            <td class="main" valign="top"><?php echo TEXT_PRODUCTS_PARTS . '<br /><small>' . TEXT_PRODUCTS_PARTS_HELP . '</small>'; ?></td>
+            <td class="main">
+             <table border="0" cellspacing="0" cellpadding="0">
+              <tr>
+	       <td><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;'; ?></td>
+	       <td>
+		<table>
+		 <tr><th>Quantity</th><th>Part #</th><th>Name</th><th>Visible</th><th>Actions</th></tr>
+		 <?php
+		 foreach ($pInfo->products_parts as $part) {
+                  echo zen_draw_hidden_field("products_part__{$part['products_id']}__products_model", $part["products_model"]);
+                  echo zen_draw_hidden_field("products_part__{$part['products_id']}__products_name", $part["products_name"]);
+		  echo "<tr>";
+		  echo "<td>" . zen_draw_input_field("products_part__{$part['products_id']}__amount", $part['amount']) . "</td>";
+		  echo "<td>{$part['products_model']}</td><td>{$part['products_name']}</td>";
+		  echo "<td>" . zen_draw_checkbox_field("products_part__{$part['products_id']}__visible", 'on', $part['visible']) . "</td>";
+		  echo "<td>" . zen_image_submit('button_delete.gif', IMAGE_DELETE, "name='products_part__{$part['products_id']}__delete' value='1'") . "</td>";
+		  echo "</tr>";
+		 }
+		?>
+	       </table>
+               <table><tr>
+	        <?php
+                 echo "<td>" . zen_draw_input_field('products_new_part_model', '') . "</td>";
+                 echo "<td>" . zen_image_submit('button_search.gif', IMAGE_SEARCH, "name='products_search_part' value='1'") . "</td>";
+                 echo "<td>" . zen_image_submit('button_insert.gif', IMAGE_INSERT, "name='products_add_part' value='1'") . "</td>";
+ 	        ?>
+               </tr></table>
+	      </td>
+	     </tr>
+            </table>        
+           </td>
+          </tr>
+          <tr>
             <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
           </tr>
 <?php
@@ -480,6 +566,6 @@ updateGross();
         <td><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
       </tr>
       <tr>
-        <td class="main" align="right"><?php echo zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) . zen_image_submit('button_preview.gif', IMAGE_PREVIEW) . '&nbsp;&nbsp;<a href="' . zen_href_link(FILENAME_CATEGORIES, 'cPath=' . $cPath . (isset($_GET['pID']) ? '&pID=' . $_GET['pID'] : '') . (isset($_GET['page']) ? '&page=' . $_GET['page'] : '')) . '">' . zen_image_button('button_cancel.gif', IMAGE_CANCEL) . '</a>'; ?></td>
+        <td class="main" align="right"><?php echo zen_draw_hidden_field('products_date_added', (zen_not_null($pInfo->products_date_added) ? $pInfo->products_date_added : date('Y-m-d'))) . zen_image_submit('button_preview.gif', IMAGE_PREVIEW, "name='action' value='new_product_preview'") . '&nbsp;&nbsp;<a href="' . zen_href_link(FILENAME_CATEGORIES, 'cPath=' . $cPath . (isset($_GET['pID']) ? '&pID=' . $_GET['pID'] : '') . (isset($_GET['page']) ? '&page=' . $_GET['page'] : '')) . '">' . zen_image_button('button_cancel.gif', IMAGE_CANCEL) . '</a>'; ?></td>
       </tr>
     </table></form>
