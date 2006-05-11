@@ -47,7 +47,7 @@
     // remove product from all its categories:
     $db->Execute("delete from " . TABLE_PRODUCTS_TO_CATEGORIES . "
                   where products_id = '" . (int)$product_id . "'
-                  and categories_id = '" . (int)$product_categories . "'") .'<br />';
+                  and categories_id in ('" . join("', '", $product_categories) . "')");
 
     // confirm that product is no longer linked to any categories
     $count_categories = $db->Execute("select count(categories_id) as total
