@@ -19,9 +19,9 @@ define('HEADER_TITLE_LOGIN', 'Log In');
 
 // added defines for header alt and text
 define('HEADER_ALT_TEXT', 'Powered by Zen Cart :: The Art of E-Commerce [home link]');
-define('HEADER_SALES_TEXT', '<h1>Sales Message Goes Here</h1>');
+define('HEADER_SALES_TEXT', '');
 define('HEADER_LOGO_WIDTH', '200px');
-define('HEADER_LOGO_HEIGHT', '70px');
+define('HEADER_LOGO_HEIGHT', '48px');
 define('HEADER_LOGO_IMAGE', 'logo.gif');
 
 // header Search Button/Box Search Button

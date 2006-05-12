@@ -78,7 +78,7 @@ input:focus, select:focus, textarea:focus {
 FIELDSET {
 	padding: 0.5em;
 	margin: 0.5em 0em;
-	border: 1px solid #cccccc;
+	border: 1px solid #0e3192;
 	}
 LEGEND {
 	font-weight: bold;
@@ -128,7 +128,7 @@ HR {
 	height: 1px;
 	margin-top: 0.5em;
 	border: none;
-	border-bottom: 1px solid #9a9a9a;
+	border-bottom: 1px solid #0e3192;
 	}
 /*warnings, errors, messages*/
 .messageStackWarning, .messageStackError, .messageStackSuccess, .messageStackCaution {
@@ -212,7 +212,7 @@ HR {
 	margin: 0em;
 	background-color: #ffffff;
 	font-weight: bold;
-	color: #9a9a9a;
+	color: #0e3192;
 	height: 1%;
 	width: 100%;
 }
@@ -232,7 +232,7 @@ HR {
 	text-decoration: none;
 	padding: 0em 0.5em;
 	margin: 0;
-	color: #9a9a9a;
+	color: #0e3192;
 }
 
 #navEZPagesTOCWrapper {
@@ -260,9 +260,10 @@ HR {
 }
 #navBreadCrumb {}
 #navEZPagesTop {
-	background-image: url(../images/tile_back.jpg);
+	background: #ffffff;
+//	background-image: url(../images/tile_back.jpg);
 	background-repeat: repeat-x;
-	border: 1px solid #9a9a9a;
+	border: 1px solid #0e3192;
 	}
 #navBreadCrumb, #navEZPagesTop {
 	font-size: 0.95em;
@@ -273,11 +274,11 @@ HR {
 
 #navColumnOne {
 	padding: 0.5em;
-	border-left: 1px solid #cccccc;
+//	border-left: 1px solid #0e3192;
 	}
 #navColumnTwo {
 	padding: 0.5em;
-	border-right: 1px solid #cccccc;
+//	border-right: 1px solid #0e3192;
 	}
 
 /*The main content classes*/
@@ -321,7 +322,7 @@ HR {
 	}
 
 .cartTableHeading TH {
-	border-bottom: 1px solid #cccccc;
+	border-bottom: 1px solid #0e3192;
 	}
 
 .cartTableHeading, #cartSubTotal {
@@ -330,7 +331,7 @@ HR {
  }
 
 #cartSubTotal {
-	border-top: 1px solid #cccccc;
+	border-top: 1px solid #0e3192;
 	font-weight: bold;
 	text-align: right;
 	line-height: 2.2em;
@@ -429,16 +430,17 @@ HR {
 
 h2.centerBoxHeading, .productListing-rowheading {
 	margin: 0em;
-	background-image: url(../images/tile_back.jpg);
+	background: #ffffff;
+//	background-image: url(../images/tile_back.jpg);
 	font-size: 1em;
 	color: #ffffff;
 	padding: 0.5em 0.2em;
-	border-bottom: 1px solid #9a9a9a;
+	border-bottom: 1px solid #0e3192;
 	}
 .centerBoxWrapper, .tabTable {
 	padding: 0px;
 	height: 1%; /*do not remove- IEhack*/
-	border: 1px solid #9a9a9a;
+	border: 1px solid #0e3192;
 	margin-bottom: 1em;
 	}
 

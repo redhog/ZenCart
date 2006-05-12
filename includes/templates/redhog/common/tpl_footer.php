@@ -26,7 +26,7 @@
   // copy /templates/templates_defaults/common/tpl_footer.php to /templates/my_template/privacy/tpl_footer.php
   // to override the global settings and turn off the footer un-comment the following line:
 
-  // $flag_disable_footer = true;
+  $flag_disable_footer = true;
 require(DIR_WS_MODULES . zen_get_module_directory('footer.php'));
 
 if (!isset($flag_disable_footer) || $flag_disable_footer == false) {
