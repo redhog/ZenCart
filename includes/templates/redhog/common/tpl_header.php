@@ -50,7 +50,7 @@ if (!isset($flag_disable_header) || $flag_disable_header == false) {
         </table>
         <table border="0" width="100%" cellspacing="0" cellpadding="0" class="header">
           <tr><!-- All HEADER_ definitions in the columns below are defined in includes/languages/english.php //-->
-            <td valign="middle" height="<?php echo HEADER_LOGO_HEIGHT; ?>" width="<?php echo HEADER_LOGO_WIDTH; ?>">
+            <td valign="top" height="<?php echo HEADER_LOGO_HEIGHT; ?>" width="<?php echo HEADER_LOGO_WIDTH; ?>">
 <?php echo '<a href="' . zen_href_link(FILENAME_DEFAULT) . '">' . zen_image($template->get_template_dir(HEADER_LOGO_IMAGE, DIR_WS_TEMPLATE, $current_page_base,'images'). '/' . HEADER_LOGO_IMAGE, HEADER_ALT_TEXT) . '</a>'; ?>
             </td>
             <td align="center" valign="top">
