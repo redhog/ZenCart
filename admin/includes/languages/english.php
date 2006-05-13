@@ -475,6 +475,7 @@ define('NOT_INSTALLED_TEXT','Not Installed');
 
   define('BOX_TOOLS_EMAIL_WELCOME','Email Welcome');
 
+  define('IMAGE_CHANGE','Change');
   define('IMAGE_DISPLAY','Display');
   define('IMAGE_UPDATE_SORT','Update Sort Order');
   define('IMAGE_EDIT_PRODUCT','Edit Product');
@@ -560,6 +561,7 @@ define('TABLE_ATTRIBUTES_QTY_PRICE_PRICE','PRICE');
 define('TEXT_ATTRIBUTES_QTY_PRICES_ONETIME_HELP', 'Option Quantity Discounts Onetime Charges');
 define('TEXT_CATEGORIES_PRODUCTS', 'Select a Category with Products ... Or move between the Products');
 define('TEXT_PRODUCT_TO_VIEW', 'Select a Product to View and Press Display ...');
+define('TEXT_PRODUCTS_PRICE_CHANGE', 'Change the price of all products in this category to');
 
 define('TEXT_INFO_SET_MASTER_CATEGORIES_ID', 'Invalid Master Category ID');
 define('TEXT_INFO_ID', ' ID# ');

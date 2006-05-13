@@ -64,6 +64,11 @@
 
   require(DIR_WS_MODULES . FILENAME_PREV_NEXT);
 
+  if (isset($_GET['all_action']) && $_GET['all_action'] == 'change_price') {
+    $change = ((float) $_POST["products_price_change"]) / 100.0;
+    $db->Execute("update products set products_price = products_price * '{$change}' where master_categories_id = '{$current_category_id}'");
+  }
+
   if ($action == 'delete_special') {
     $delete_special = $db->Execute("delete from " . TABLE_SPECIALS . " where products_id='" . $products_filter . "'");
 
@@ -287,6 +292,17 @@
   if ($action != 'edit_update') {
     require(DIR_WS_MODULES . FILENAME_PREV_NEXT_DISPLAY);
 ?>
+      <tr>
+       <td colspan="2"><table border="0" cellspacing="0" cellpadding="0"><tr>
+        <?php
+  	 $href = zen_href_link(FILENAME_PRODUCTS_PRICE_MANAGER, "all_action=change_price&products_filter={$products_filter}&current_category_id={$current_category_id}");
+         echo "<form name='change_price' action='$href' method='post'>";
+ 	 echo "<td>" . TEXT_PRODUCTS_PRICE_CHANGE . "</td><td>" . zen_draw_input_field("products_price_change", "100") . "%";
+         echo "</td><td>" . zen_image_submit("button_change.gif", IMAGE_CHANGE) . "</td>";
+         echo "</form>";
+        ?>
+       </tr></table></td>
+      </tr>
 
       <tr><form name="set_products_filter_id" <?php echo 'action="' . zen_href_link(FILENAME_PRODUCTS_PRICE_MANAGER, 'action=set_products_filter') . '"'; ?> method="post"><?php echo zen_draw_hidden_field('products_filter', $_GET['products_filter']); ?><?php echo zen_draw_hidden_field('current_category_id', $_GET['current_category_id']); ?>
         <td colspan="2"><table border="0" cellspacing="0" cellpadding="2">
