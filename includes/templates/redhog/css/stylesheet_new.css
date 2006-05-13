@@ -172,14 +172,20 @@ HR {
 }
 
 #sendSpendWrapper {
-	border: 1px solid #cacaca;
-	float: right;
+	border: 1px solid #0e3192;
+//	float: right;
 	margin: 0em 0em 1em 1em;
 	}
 
-.floatingBox, #accountLinksWrapper, #sendSpendWrapper, #checkoutShipto, #checkoutBillto, #csNotifications, #navEZPagesTOCWrapper {
+#checkoutSuccessOrderInfo {
+	border: 1px solid #0e3192;
+//	float: right;
+	margin: 0em 0em 1em 1em;
+}
+
+.floatingBox, #accountLinksWrapper, #sendSpendWrapper, #checkoutShipto, #checkoutBillto, #checkoutSuccessOrderInfo, #csNotifications, #navEZPagesTOCWrapper {
 	margin: 10px 0px;
-	width: 46%;
+	width: 100%;
 	}
 
 .wrapperAttribsOptions {
