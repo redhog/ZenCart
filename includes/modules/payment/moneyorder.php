@@ -80,7 +80,7 @@
     }
 
     function confirmation() {
-      return array('title' => MODULE_PAYMENT_MONEYORDER_TEXT_DESCRIPTION);
+      return false;
     }
 
     function process_button() {
@@ -97,6 +97,10 @@
 
     function get_error() {
       return false;
+    }
+
+    function final_status() {
+      return MODULE_PAYMENT_MONEYORDER_TEXT_DESCRIPTION;
     }
 
     function check() {

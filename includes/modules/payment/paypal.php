@@ -282,6 +282,12 @@ class paypal extends base {
   function output_error() {
     return false;
   }
+  function get_error() {
+    return false;
+  }
+  function final_status() {
+    return false;
+  }
   /**
    * Check to see whether module is installed
    *

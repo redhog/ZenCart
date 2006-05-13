@@ -229,5 +229,13 @@ class payment extends base {
       }
     }
   }
+
+  function final_status() {
+    if (is_array($this->modules)) {
+      if (is_object($GLOBALS[$this->selected_module]) && ($GLOBALS[$this->selected_module]->enabled) ) {
+        return $GLOBALS[$this->selected_module]->final_status();
+      }
+    }
+  }
 }
 ?>

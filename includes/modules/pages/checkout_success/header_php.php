@@ -101,9 +101,22 @@ if ($flag_global_notifications != '1') {
     $customer_gv_balance = $currencies->format($gv_result->fields['amount']);
   }
 
+// load selected payment module
+require(DIR_WS_CLASSES . 'payment.php');
+$payment_modules = new payment($_SESSION['payment']);
+// load the selected shipping module
+require(DIR_WS_CLASSES . 'shipping.php');
+$shipping_modules = new shipping($_SESSION['shipping']);
 
 // include template specific file name defines
 $define_page = zen_get_file_directory(DIR_WS_LANGUAGES . $_SESSION['language'] . '/html_includes/', FILENAME_DEFINE_CHECKOUT_SUCCESS, 'false');
+
+// unregister session variables used during checkout
+  unset($_SESSION['sendto']);
+  unset($_SESSION['billto']);
+  unset($_SESSION['shipping']);
+  unset($_SESSION['payment']);
+  unset($_SESSION['comments']);
 
 // This should be last line of the script:
 $zco_notifier->notify('NOTIFY_HEADER_END_CHECKOUT_SUCCESS');

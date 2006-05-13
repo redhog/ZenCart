@@ -447,6 +447,9 @@ class authorizenet_aim extends base {
 
     return $error;
   }
+  function final_status() {
+    return false;
+  }
   /**
    * Check to see whether module is installed
    *

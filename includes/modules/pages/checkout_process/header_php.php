@@ -16,12 +16,6 @@
 
   $_SESSION['cart']->reset(true);
 
-// unregister session variables used during checkout
-  unset($_SESSION['sendto']);
-  unset($_SESSION['billto']);
-  unset($_SESSION['shipping']);
-  unset($_SESSION['payment']);
-  unset($_SESSION['comments']);
   $order_total_modules->clear_posts();//ICW ADDED FOR CREDIT CLASS SYSTEM
 
   zen_redirect(zen_href_link(FILENAME_CHECKOUT_SUCCESS, '', 'SSL'));

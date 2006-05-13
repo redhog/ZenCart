@@ -104,6 +104,10 @@
       return false;
     }
 
+    function final_status() {
+      return false;
+    }
+
     function check() {
       global $db;
       if (!isset($this->_check)) {

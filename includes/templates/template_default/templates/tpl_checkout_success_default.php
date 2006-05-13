@@ -73,6 +73,14 @@
 
 <div id="checkoutSuccessOrderNumber"><?php echo TEXT_YOUR_ORDER_NUMBER . $zv_orders_id; ?></div>
 
+<?php
+  if (is_array($payment_modules->modules)) {
+    $result = $payment_modules->final_status();
+    if ($result != false)
+      echo $result;
+  }
+?>
+
 <div id="checkoutSuccessOrderLink"><?php echo TEXT_SEE_ORDERS;?></div>
 
 <div id="checkoutSuccessContactLink"><?php echo TEXT_CONTACT_STORE_OWNER;?></div>
