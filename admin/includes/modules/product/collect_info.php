@@ -16,6 +16,7 @@ if (!defined('IS_ADMIN_FLAG')) {
                        'products_quantity' => '',
                        'products_model' => '',
 		       'products_parts' => array(),
+		       'products_wholesalers' => array(),
                        'products_image' => '',
                        'products_price' => '',
                        'products_virtual' => DEFAULT_PRODUCT_PRODUCTS_VIRTUAL,
@@ -69,13 +70,28 @@ if (!defined('IS_ADMIN_FLAG')) {
                              where products_parts.product = '" . (int)$_GET['pID'] . "'
                              and products.products_id = products_parts.product_part
                              and products_description.products_id = products_parts.product_part
-                             and products_description.language_id = '" . (int)$_SESSION['languages_id'] . "'");
+                             and products_description.language_id = '" . (int)$_SESSION['languages_id'] . "'
+                             order by products.products_model");
       $products_parts = array();
       while (!$parts->EOF) {
         $products_parts[$parts->fields['products_id']] = $parts->fields;
         $parts->MoveNext();
       }
       $parameters['products_parts'] = $products_parts;
+
+      $wholesalers = $db->Execute("select products_wholesalers.*, wholesalers.*, wholesalers_info.*
+                             from " . TABLE_PRODUCTS_WHOLESALERS . " as products_wholesalers, " . TABLE_WHOLESALERS . " as wholesalers, " . TABLE_WHOLESALERS_INFO . " as wholesalers_info
+                             where products_wholesalers.product = '" . (int)$_GET['pID'] . "'
+                             and products_wholesalers.wholesaler = wholesalers.wholesalers_id
+                             and products_wholesalers.wholesaler = wholesalers_info.wholesalers_id
+                             and wholesalers_info.languages_id = '" . (int)$_SESSION['languages_id'] . "'
+                             order by wholesalers.wholesalers_id, products_wholesalers.amount");
+      $products_wholesalers = array();
+      while (!$wholesalers->EOF) {
+        $products_wholesalers[$wholesalers->fields['products_wholesalers_id']] = $wholesalers->fields;
+        $wholesalers->MoveNext();
+      }
+      $parameters['products_wholesalers'] = $products_wholesalers;
 
       $pInfo->objectInfo($parameters);
     } elseif (zen_not_null($_POST)) {
@@ -115,6 +131,43 @@ if (!defined('IS_ADMIN_FLAG')) {
 
       $parameters['products_parts'] = $products_parts;
 
+      $products_wholesalers = array();
+      $delete_wholesalers = array();
+      foreach ($parameters as $key => $value) {
+        // name is products_wholesaler__PRODUCTID__fieldname
+        if (strncmp($key, "products_wholesaler__", strlen("products_wholesaler__")) == 0) {
+          $keyparts = explode('__', $key);
+          if ($keyparts[2] == 'delete') {
+ 	    $delete_wholesalers[] = $keyparts[1];
+ 	  } else {
+   	    if (!isset($products_wholesalers[(int) $keyparts[1]]))
+	      $products_wholesalers[$keyparts[1]] = array('products_wholesalers_id' => $keyparts[1]);
+	    $products_wholesalers[$keyparts[1]][$keyparts[2]] = $value;
+	  }
+        }
+      }
+      foreach ($delete_wholesalers as $wholesaler)
+        unset($products_wholesalers[$wholesaler]);
+
+      if (isset($_POST['products_add_wholesaler'])) {
+	$wholesalers = $db->Execute("select wholesalers.*, wholesalers_info.*
+			       from " . TABLE_WHOLESALERS . " as wholesalers, " . TABLE_WHOLESALERS_INFO . " as wholesalers_info
+			       where wholesalers.wholesalers_id = '" . $parameters['products_new_wholesaler_wholesaler'] . "'
+			       and wholesalers_info.wholesalers_id = '" . $parameters['products_new_wholesaler_wholesaler'] . "'
+			       and wholesalers_info.languages_id = '" . (int)$_SESSION['languages_id'] . "'");
+	if ($wholesalers->RecordCount() != 0) {
+ 	  $products_wholesalers_id = array_reduce(array_keys($products_wholesalers), "max", 0) + 1;
+	  var_dump($products_wholesalers_id);
+ 	  $products_wholesalers[$products_wholesalers_id] = $wholesalers->fields;
+	  $products_wholesalers[$products_wholesalers_id]['products_wholesalers_id'] = $products_wholesalers_id;
+	  $products_wholesalers[$products_wholesalers_id]['amount'] = $parameters['products_new_wholesaler_amount'];
+	  $products_wholesalers[$products_wholesalers_id]['price'] = $parameters['products_new_wholesaler_price'];
+	  $products_wholesalers[$products_wholesalers_id]['wholesaler'] = $parameters['products_new_wholesaler_wholesaler'];
+        }
+      }
+
+      $parameters['products_wholesalers'] = $products_wholesalers;
+
       $pInfo->objectInfo($parameters);
       $products_name = $_POST['products_name'];
       $products_description = $_POST['products_description'];
@@ -128,6 +181,15 @@ if (!defined('IS_ADMIN_FLAG')) {
       $manufacturers_array[] = array('id' => $manufacturers->fields['manufacturers_id'],
                                      'text' => $manufacturers->fields['manufacturers_name']);
       $manufacturers->MoveNext();
+    }
+
+    $wholesalers_array = array();
+    $wholesalers = $db->Execute("select wholesalers_id, wholesalers_name
+                                   from " . TABLE_WHOLESALERS . " order by wholesalers_name");
+    while (!$wholesalers->EOF) {
+      $wholesalers_array[] = array('id' => $wholesalers->fields['wholesalers_id'],
+                                     'text' => $wholesalers->fields['wholesalers_name']);
+      $wholesalers->MoveNext();
     }
 
     $tax_class_array = array(array('id' => '0', 'text' => TEXT_NONE));
@@ -340,6 +402,46 @@ echo zen_draw_hidden_field('products_price_sorter', $pInfo->products_price_sorte
           <tr>
             <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
           </tr>
+          <tr>
+	   <td class="main" valign="top"><?php echo TEXT_PRODUCTS_WHOLESALERS; ?></td>
+	   <td class="main">
+	    <table border="0" cellspacing="0" cellpadding="0">
+	     <tr>
+	      <td><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;'; ?></td>
+	      <td>
+	       <table>
+		<?php
+                 echo "<tr><th>" . TABLE_HEADING_WHOLESALERS_QUANTITY ."</th><th>" . TABLE_HEADING_WHOLESALERS_PRICE ."</th><th></th><th>" . TABLE_HEADING_WHOLESALERS_WHOLESALER ."</th><th>" . TABLE_HEADING_WHOLESALERS_ACTIONS ."</th></tr>";
+		 foreach ($pInfo->products_wholesalers as $wholesaler) {
+                  echo zen_draw_hidden_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__wholesaler", $wholesaler["wholesaler"]);
+                  echo zen_draw_hidden_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__wholesalers_url", $wholesaler["wholesalers_url"]);
+                  echo zen_draw_hidden_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__wholesalers_name", $wholesaler["wholesalers_name"]);
+		  echo "<tr>";
+		  echo "<td>" . zen_draw_input_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__amount", $wholesaler['amount']) . "</td>";
+		  echo "<td>" . zen_draw_input_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__price", $wholesaler['price']) . "</td>";
+		  echo "<td><a href='{$wholesaler['wholesalers_url']}' target='_blank'>" . zen_image(DIR_WS_IMAGES . 'icon_webpage.gif', IMAGE_ICON_WEBPAGE) . "</a></td><td><a href=''>{$wholesaler['wholesalers_name']}</a></td>";
+		  echo "<td>" . zen_image_submit('button_delete.gif', IMAGE_DELETE, "name='products_wholesaler__{$wholesaler['products_wholesalers_id']}__delete' value='1'") . "</td>";
+		  echo "</tr>\n";
+		 }
+                 echo "<tr>";
+	         echo "<td>" . zen_draw_input_field("products_new_wholesaler_amount", '1') . "</td>";
+                 echo "<td>" . zen_draw_input_field('products_new_wholesaler_price', '0.0000') . "</td>";
+                 echo "<td></td>";
+                 echo "<td>" . zen_draw_pull_down_menu('products_new_wholesaler_wholesaler', $wholesalers_array) . "</td>";
+                 echo "<td>";
+                 echo zen_image_submit('button_insert.gif', IMAGE_INSERT, "name='products_add_wholesaler' value='1'");
+                 echo "</td>";
+                 echo "</tr>\n";
+ 	        ?>
+	       </table>
+	      </td>
+	     </tr>
+            </table>        
+           </td>
+          </tr>
+          <tr>
+            <td colspan="2"><?php echo zen_draw_separator('pixel_trans.gif', '1', '10'); ?></td>
+          </tr>
 <?php
     for ($i=0, $n=sizeof($languages); $i<$n; $i++) {
 ?>
@@ -499,6 +601,7 @@ updateGross();
 		  echo "<td>" . zen_image_submit('button_delete.gif', IMAGE_DELETE, "name='products_part__{$part['products_id']}__delete' value='1'") . "</td>";
 		  echo "</tr>";
 		 }
+                 echo "<tr>";
 	         echo "<td>" . zen_draw_input_field("products_new_part_amount", '1') . "</td>";
                  echo "<td>" . zen_draw_input_field('products_new_part_model', '') . "</td>";
                  echo "<td></td>";
@@ -507,8 +610,9 @@ updateGross();
                  echo zen_image_submit('button_insert.gif', IMAGE_INSERT, "name='products_add_part' value='1'");
                  echo zen_image_submit('button_search.gif', IMAGE_SEARCH, "name='products_search_part' value='1'");
                  echo "</td>";
+                 echo "</tr>";
  	        ?>
-               </tr></table>
+               </table>
 	      </td>
 	     </tr>
             </table>        

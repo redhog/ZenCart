@@ -65,6 +65,7 @@ define('TABLE_PAYPAL_SESSION', DB_PREFIX . 'paypal_session');
 define('TABLE_PAYPAL_PAYMENT_STATUS', DB_PREFIX . 'paypal_payment_status');
 define('TABLE_PAYPAL_PAYMENT_STATUS_HISTORY', DB_PREFIX . 'paypal_payment_status_history');
 define('TABLE_PRODUCTS', DB_PREFIX . 'products');
+define('TABLE_PRODUCTS_WHOLESALERS', DB_PREFIX . 'products_wholesalers');
 define('TABLE_PRODUCTS_PARTS', DB_PREFIX . 'products_parts');
 define('TABLE_PRODUCT_TYPES', DB_PREFIX . 'product_types');
 define('TABLE_PRODUCT_TYPE_LAYOUT', DB_PREFIX . 'product_type_layout');
@@ -95,6 +96,8 @@ define('TABLE_ZONES_TO_GEO_ZONES', DB_PREFIX . 'zones_to_geo_zones');
 define('TABLE_UPGRADE_EXCEPTIONS', DB_PREFIX . 'upgrade_exceptions');
 define('TABLE_WISHLIST', DB_PREFIX . 'customers_wishlist');
 define('TABLE_WHOS_ONLINE', DB_PREFIX . 'whos_online');
+define('TABLE_WHOLESALERS', DB_PREFIX . 'wholesalers');
+define('TABLE_WHOLESALERS_INFO', DB_PREFIX . 'wholesalers_info');
 define('TABLE_ZONES', DB_PREFIX . 'zones');
 
 ?>

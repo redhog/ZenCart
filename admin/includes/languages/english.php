@@ -116,6 +116,7 @@ define('BOX_CATALOG_PRODUCT_TYPES', 'Product Types');
 define('BOX_CATALOG_CATEGORIES_OPTIONS_NAME_MANAGER', 'Option Name Manager');
 define('BOX_CATALOG_CATEGORIES_OPTIONS_VALUES_MANAGER', 'Option Value Manager');
 define('BOX_CATALOG_MANUFACTURERS', 'Manufacturers');
+define('BOX_CATALOG_WHOLESALERS', 'Wholesalers');
 define('BOX_CATALOG_REVIEWS', 'Reviews');
 define('BOX_CATALOG_SPECIALS', 'Specials');
 define('BOX_CATALOG_PRODUCTS_EXPECTED', 'Products Expected');
@@ -286,6 +287,7 @@ define('IMAGE_ICON_STATUS_GREEN_LIGHT', 'Set Active');
 define('IMAGE_ICON_STATUS_RED', 'Inactive');
 define('IMAGE_ICON_STATUS_RED_LIGHT', 'Set Inactive');
 define('IMAGE_ICON_INFO', 'Info');
+define('IMAGE_ICON_WEBPAGE', 'Webpage');
 define('IMAGE_INSERT', 'Insert');
 define('IMAGE_IMPORT', 'Import');
 define('IMAGE_LOCK', 'Lock');
@@ -385,6 +387,7 @@ define('TEXT_DISPLAY_NUMBER_OF_TAX_CLASSES', 'Displaying <b>%d</b> to <b>%d</b> 
 define('TEXT_DISPLAY_NUMBER_OF_TEMPLATES', 'Displaying <b>%d</b> to <b>%d</b> (of <b>%d</b> template associations)');
 define('TEXT_DISPLAY_NUMBER_OF_TAX_ZONES', 'Displaying <b>%d</b> to <b>%d</b> (of <b>%d</b> tax zones)');
 define('TEXT_DISPLAY_NUMBER_OF_TAX_RATES', 'Displaying <b>%d</b> to <b>%d</b> (of <b>%d</b> tax rates)');
+define('TEXT_DISPLAY_NUMBER_OF_WHOLESALERS', 'Displaying <b>%d</b> to <b>%d</b> (of <b>%d</b> wholesalers)');
 define('TEXT_DISPLAY_NUMBER_OF_ZONES', 'Displaying <b>%d</b> to <b>%d</b> (of <b>%d</b> zones)');
 
 define('PREVNEXT_BUTTON_PREV', '&lt;&lt;');

@@ -22,6 +22,7 @@ if (!defined('IS_ADMIN_FLAG')) {
   $za_contents[] = array('text' => BOX_CATALOG_PRODUCT_OPTIONS_NAME, 'link' => zen_href_link(FILENAME_PRODUCTS_OPTIONS_NAME, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_CATALOG_PRODUCT_OPTIONS_VALUES, 'link' => zen_href_link(FILENAME_PRODUCTS_OPTIONS_VALUES, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_CATALOG_MANUFACTURERS, 'link' => zen_href_link(FILENAME_MANUFACTURERS, '', 'NONSSL'));
+  $za_contents[] = array('text' => BOX_CATALOG_WHOLESALERS, 'link' => zen_href_link(FILENAME_WHOLESALERS, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_CATALOG_REVIEWS, 'link' => zen_href_link(FILENAME_REVIEWS, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_CATALOG_SPECIALS, 'link' => zen_href_link(FILENAME_SPECIALS, '', 'NONSSL'));
   $za_contents[] = array('text' => BOX_CATALOG_FEATURED, 'link' => zen_href_link(FILENAME_FEATURED, '', 'NONSSL'));

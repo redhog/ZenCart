@@ -709,6 +709,18 @@
     return $manufacturer->fields['manufacturers_url'];
   }
 
+////
+// Return the wholesalers URL in the needed language
+// TABLES: wholesalers_info
+  function zen_get_wholesaler_url($wholesaler_id, $language_id) {
+    global $db;
+    $wholesaler = $db->Execute("select wholesalers_url
+                                  from " . TABLE_WHOLESALERS_INFO . "
+                                  where wholesalers_id = '" . (int)$wholesaler_id . "'
+                                  and languages_id = '" . (int)$language_id . "'");
+
+    return $wholesaler->fields['wholesalers_url'];
+  }
 
 ////
 // Wrapper for class_exists() function
@@ -1199,6 +1211,9 @@
 
     $db->Execute("delete from " . TABLE_PRODUCTS_PARTS . "
                   where product = '" . (int)$product_id . "' or product_part = '" . (int)$product_id . "'");
+
+    $db->Execute("delete from " . TABLE_PRODUCTS_WHOLESALERS . "
+                  where product = '" . (int)$product_id . "'");
 
 //    if ($ptc == 'true') {
       $db->Execute("delete from " . TABLE_PRODUCTS_TO_CATEGORIES . "

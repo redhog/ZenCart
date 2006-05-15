@@ -1353,6 +1353,24 @@ CREATE TABLE products_parts (
 # --------------------------------------------------------
 
 #
+# Table structure for table products_wholesalers
+#
+
+DROP TABLE IF EXISTS products_wholesalers;
+CREATE TABLE products_wholesalers (
+  products_wholesalers_id int(11) NOT NULL auto_increment,
+  product int(11) NOT NULL default '0',
+  wholesaler int(11) NOT NULL default '0',
+  amount int(11) NOT NULL default '1',
+  price decimal(15,4) NOT NULL default '0.0000',
+  PRIMARY KEY (products_wholesalers_id),
+  KEY idx_products_wholesalers_product_zen (product),
+  KEY idx_products_wholesalers_wholesaler_zen (wholesaler)
+) TYPE=MyISAM;
+
+# --------------------------------------------------------
+
+#
 # Table structure for table products_attributes
 #
 
@@ -1825,6 +1843,39 @@ CREATE TABLE whos_online (
   KEY idx_time_entry_zen (time_entry),
   KEY idx_time_last_click_zen (time_last_click),
   KEY idx_last_page_url_zen (last_page_url)
+) TYPE=MyISAM;
+
+# --------------------------------------------------------
+
+#
+# Table structure for table wholesalers
+#
+
+DROP TABLE IF EXISTS wholesalers;
+CREATE TABLE wholesalers (
+  wholesalers_id int(11) NOT NULL auto_increment,
+  wholesalers_name varchar(32) NOT NULL default '',
+  wholesalers_image varchar(64) default NULL,
+  date_added datetime default NULL,
+  last_modified datetime default NULL,
+  PRIMARY KEY  (wholesalers_id),
+  KEY idx_mfg_name_zen (wholesalers_name)
+) TYPE=MyISAM;
+
+# --------------------------------------------------------
+
+#
+# Table structure for table wholesalers_info
+#
+
+DROP TABLE IF EXISTS wholesalers_info;
+CREATE TABLE wholesalers_info (
+  wholesalers_id int(11) NOT NULL default '0',
+  languages_id int(11) NOT NULL default '0',
+  wholesalers_url varchar(255) NOT NULL default '',
+  url_clicked int(5) NOT NULL default '0',
+  date_last_click datetime default NULL,
+  PRIMARY KEY  (wholesalers_id,languages_id)
 ) TYPE=MyISAM;
 
 # --------------------------------------------------------

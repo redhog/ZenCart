@@ -99,6 +99,7 @@ define('TEXT_PRODUCTS_QTY_BOX_STATUS_ON', 'Yes, Show Quantity Box');
 define('TEXT_PRODUCTS_QTY_BOX_STATUS_OFF', 'No, Do not show Quantity Box');
 
 define('TEXT_PRODUCTS_MANUFACTURER', 'Products Manufacturer:');
+define('TEXT_PRODUCTS_WHOLESALERS', 'Products Wholesalers:');
 define('TEXT_PRODUCTS_NAME', 'Products Name:');
 define('TEXT_PRODUCTS_DESCRIPTION', 'Products Description:');
 define('TEXT_PRODUCTS_QUANTITY', 'Products Quantity:');
@@ -203,5 +204,11 @@ define('TEXT_COPY_AS_DUPLICATE', 'Duplicate product');
   define('TABLE_HEADING_NAME', 'Name');
   define('TABLE_HEADING_VISIBLE', 'Visible');
   define('TABLE_HEADING_ACTIONS', 'Actions');
+
+// Wholesalers
+  define('TABLE_HEADING_WHOLESALERS_QUANTITY', 'Quantity');
+  define('TABLE_HEADING_WHOLESALERS_PRICE', 'Price per item');
+  define('TABLE_HEADING_WHOLESALERS_WHOLESALER', 'Wholesaler');
+  define('TABLE_HEADING_WHOLESALERS_ACTIONS', 'Actions');
 
 ?>
