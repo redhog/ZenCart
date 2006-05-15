@@ -1361,6 +1361,7 @@ CREATE TABLE products_wholesalers (
   products_wholesalers_id int(11) NOT NULL auto_increment,
   product int(11) NOT NULL default '0',
   wholesaler int(11) NOT NULL default '0',
+  model varchar(32) default NULL,
   amount int(11) NOT NULL default '1',
   price decimal(15,4) NOT NULL default '0.0000',
   PRIMARY KEY (products_wholesalers_id),

@@ -208,6 +208,7 @@ define('TEXT_COPY_AS_DUPLICATE', 'Duplicate product');
 // Wholesalers
   define('TABLE_HEADING_WHOLESALERS_QUANTITY', 'Quantity');
   define('TABLE_HEADING_WHOLESALERS_PRICE', 'Price per item');
+  define('TABLE_HEADING_WHOLESALERS_MODEL', "Wholesalers' part #");
   define('TABLE_HEADING_WHOLESALERS_WHOLESALER', 'Wholesaler');
   define('TABLE_HEADING_WHOLESALERS_ACTIONS', 'Actions');
 

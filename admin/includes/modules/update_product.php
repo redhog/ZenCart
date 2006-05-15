@@ -94,7 +94,6 @@
 
       // Insert wholesalers
       $products_wholesalers = array();
-      $delete_wholesalers = array();
       foreach ($_POST as $key => $value) {
         // name is products_wholesaler__PRODUCTID__fieldname
         if (strncmp($key, "products_wholesaler__", strlen("products_wholesaler__")) == 0) {
@@ -107,9 +106,10 @@
       foreach ($products_wholesalers as $wholesaler) {
         $sql = array();
         $sql["product"] = (int) $products_id;
-	$sql["wholesaler"] = $wholesaler["products_id"];
+	$sql["wholesaler"] = $wholesaler["wholesaler"];
 	$sql["price"] = $wholesaler["price"];
 	$sql["amount"] = $wholesaler["amount"];
+	$sql["model"] = $wholesaler["model"];
 	zen_db_perform(TABLE_PRODUCTS_WHOLESALERS, $sql, 'insert');
       }
 
@@ -174,6 +174,7 @@
 	$sql["wholesaler"] = $wholesaler["wholesaler"];
 	$sql["price"] = $wholesaler["price"];
 	$sql["amount"] = $wholesaler["amount"];
+	$sql["model"] = $wholesaler["model"];
 	zen_db_perform(TABLE_PRODUCTS_WHOLESALERS, $sql, 'insert');
       }
 
