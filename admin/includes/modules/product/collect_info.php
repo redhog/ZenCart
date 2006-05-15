@@ -409,26 +409,36 @@ echo zen_draw_hidden_field('products_price_sorter', $pInfo->products_price_sorte
 	     <tr>
 	      <td><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;'; ?></td>
 	      <td>
-	       <table>
+	       <table border="0" cellspacing="0" cellpadding="2">
 		<?php
-                 echo "<tr><th>" . TABLE_HEADING_WHOLESALERS_QUANTITY ."</th><th>" . TABLE_HEADING_WHOLESALERS_PRICE ."</th><th></th><th>" . TABLE_HEADING_WHOLESALERS_WHOLESALER ."</th><th>" . TABLE_HEADING_WHOLESALERS_ACTIONS ."</th></tr>";
+	         echo "<tr class='dataTableHeadingRow'>";
+                 echo "<th class='dataTableHeadingContent'>" . TABLE_HEADING_WHOLESALERS_QUANTITY . "</th>";
+		 echo "<th class='dataTableHeadingContent'>" . TABLE_HEADING_WHOLESALERS_PRICE . "</th>";
+		 echo "<th class='dataTableHeadingContent'>" . TABLE_HEADING_WHOLESALERS_WHOLESALER . "</th>";
+		 echo "<th class='dataTableHeadingContent' width='200px'>" . TABLE_HEADING_WHOLESALERS_ACTIONS . "</th>";
+		 echo "</tr>";
 		 foreach ($pInfo->products_wholesalers as $wholesaler) {
                   echo zen_draw_hidden_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__wholesaler", $wholesaler["wholesaler"]);
                   echo zen_draw_hidden_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__wholesalers_url", $wholesaler["wholesalers_url"]);
                   echo zen_draw_hidden_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__wholesalers_name", $wholesaler["wholesalers_name"]);
-		  echo "<tr>";
-		  echo "<td>" . zen_draw_input_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__amount", $wholesaler['amount']) . "</td>";
-		  echo "<td>" . zen_draw_input_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__price", $wholesaler['price']) . "</td>";
-		  echo "<td><a href='{$wholesaler['wholesalers_url']}' target='_blank'>" . zen_image(DIR_WS_IMAGES . 'icon_webpage.gif', IMAGE_ICON_WEBPAGE) . "</a></td><td><a href=''>{$wholesaler['wholesalers_name']}</a></td>";
-		  echo "<td>" . zen_image_submit('button_delete.gif', IMAGE_DELETE, "name='products_wholesaler__{$wholesaler['products_wholesalers_id']}__delete' value='1'") . "</td>";
+		  echo "<tr class='dataTableRow'>";
+		  echo "<td class='dataTableContent'>" . zen_draw_input_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__amount", $wholesaler['amount']) . "</td>";
+		  echo "<td class='dataTableContent'>" . zen_draw_input_field("products_wholesaler__{$wholesaler['products_wholesalers_id']}__price", $wholesaler['price']) . "</td>";
+		  echo "<td class='dataTableContent'><a href='{$wholesaler['wholesalers_url']}' target='_blank'>{$wholesaler['wholesalers_name']}</a></td>";
+		  echo "<td class='dataTableContent'>";
+		  echo zen_image_submit('button_delete.gif', IMAGE_DELETE, "name='products_wholesaler__{$wholesaler['products_wholesalers_id']}__delete' value='1'");
+		  $details = zen_href_link(FILENAME_WHOLESALER_DETAILS, "wholesaler={$wholesaler['wholesaler']}");
+		  echo "<a href='{$details}' target='_blank'>" . zen_image_button('button_details.gif', IMAGE_DETAILS, "name='products_wholesaler__{$wholesaler['products_wholesalers_id']}__details' value='1'") . "</a>";
+		  $order = zen_href_link(FILENAME_WHOLESALER_ORDER, '');
+		  echo "<a href='{$order}' target='_blank'>" . zen_image_button('button_order.gif', IMAGE_ORDER, "name='products_wholesaler__{$wholesaler['products_wholesalers_id']}__order' value='1'") . "</a>";
+		  echo "</td>";
 		  echo "</tr>\n";
 		 }
-                 echo "<tr>";
-	         echo "<td>" . zen_draw_input_field("products_new_wholesaler_amount", '1') . "</td>";
-                 echo "<td>" . zen_draw_input_field('products_new_wholesaler_price', '0.0000') . "</td>";
-                 echo "<td></td>";
-                 echo "<td>" . zen_draw_pull_down_menu('products_new_wholesaler_wholesaler', $wholesalers_array) . "</td>";
-                 echo "<td>";
+                 echo "<tr class='dataTableRow'>";
+	         echo "<td class='dataTableContent'>" . zen_draw_input_field("products_new_wholesaler_amount", '1') . "</td>";
+                 echo "<td class='dataTableContent'>" . zen_draw_input_field('products_new_wholesaler_price', '0.0000') . "</td>";
+                 echo "<td class='dataTableContent'>" . zen_draw_pull_down_menu('products_new_wholesaler_wholesaler', $wholesalers_array) . "</td>";
+                 echo "<td class='dataTableContent'>";
                  echo zen_image_submit('button_insert.gif', IMAGE_INSERT, "name='products_add_wholesaler' value='1'");
                  echo "</td>";
                  echo "</tr>\n";
@@ -588,25 +598,31 @@ updateGross();
               <tr>
 	       <td><?php echo zen_draw_separator('pixel_trans.gif', '24', '15') . '&nbsp;'; ?></td>
 	       <td>
-		<table>
+		<table border="0" cellspacing="0" cellpadding="2">
 		 <?php
-                 echo "<tr><th>" . TABLE_HEADING_QUANTITY ."</th><th>" . TABLE_HEADING_MODEL ."</th><th>" . TABLE_HEADING_NAME ."</th><th>" . TABLE_HEADING_VISIBLE ."</th><th>" . TABLE_HEADING_ACTIONS ."</th></tr>";
+	         echo "<tr class='dataTableHeadingRow'>";
+		 echo "<th class='dataTableHeadingContent'>" . TABLE_HEADING_QUANTITY . "</th>";
+		 echo "<th class='dataTableHeadingContent'>" . TABLE_HEADING_MODEL . "</th>";
+		 echo "<th class='dataTableHeadingContent'>" . TABLE_HEADING_NAME . "</th>";
+		 echo "<th class='dataTableHeadingContent'>" . TABLE_HEADING_VISIBLE. "</th>";
+		 echo "<th class='dataTableHeadingContent'>" . TABLE_HEADING_ACTIONS ."</th>";
+		 echo "</tr>";
 		 foreach ($pInfo->products_parts as $part) {
                   echo zen_draw_hidden_field("products_part__{$part['products_id']}__products_model", $part["products_model"]);
                   echo zen_draw_hidden_field("products_part__{$part['products_id']}__products_name", $part["products_name"]);
-		  echo "<tr>";
-		  echo "<td>" . zen_draw_input_field("products_part__{$part['products_id']}__amount", $part['amount']) . "</td>";
-		  echo "<td>{$part['products_model']}</td><td>{$part['products_name']}</td>";
-		  echo "<td>" . zen_draw_checkbox_field("products_part__{$part['products_id']}__visible", 'on', $part['visible']) . "</td>";
-		  echo "<td>" . zen_image_submit('button_delete.gif', IMAGE_DELETE, "name='products_part__{$part['products_id']}__delete' value='1'") . "</td>";
+		  echo "<tr class='dataTableRow'>";
+		  echo "<td class='dataTableContent'>" . zen_draw_input_field("products_part__{$part['products_id']}__amount", $part['amount']) . "</td>";
+		  echo "<td class='dataTableContent'>{$part['products_model']}</td><td class='dataTableContent'>{$part['products_name']}</td>";
+		  echo "<td class='dataTableContent'>" . zen_draw_checkbox_field("products_part__{$part['products_id']}__visible", 'on', $part['visible']) . "</td>";
+		  echo "<td class='dataTableContent'>" . zen_image_submit('button_delete.gif', IMAGE_DELETE, "name='products_part__{$part['products_id']}__delete' value='1'") . "</td>";
 		  echo "</tr>";
 		 }
-                 echo "<tr>";
-	         echo "<td>" . zen_draw_input_field("products_new_part_amount", '1') . "</td>";
-                 echo "<td>" . zen_draw_input_field('products_new_part_model', '') . "</td>";
-                 echo "<td></td>";
-                 echo "<td>" . zen_draw_checkbox_field("products_new_part_visible", 'on', 1) . "</td>";
-                 echo "<td>";
+                 echo "<tr class='dataTableRow'>";
+	         echo "<td class='dataTableContent'>" . zen_draw_input_field("products_new_part_amount", '1') . "</td>";
+                 echo "<td class='dataTableContent'>" . zen_draw_input_field('products_new_part_model', '') . "</td>";
+                 echo "<td class='dataTableContent'></td>";
+                 echo "<td class='dataTableContent'>" . zen_draw_checkbox_field("products_new_part_visible", 'on', 1) . "</td>";
+                 echo "<td class='dataTableContent'>";
                  echo zen_image_submit('button_insert.gif', IMAGE_INSERT, "name='products_add_part' value='1'");
                  echo zen_image_submit('button_search.gif', IMAGE_SEARCH, "name='products_search_part' value='1'");
                  echo "</td>";

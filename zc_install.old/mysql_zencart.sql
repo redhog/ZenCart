@@ -1855,7 +1855,21 @@ DROP TABLE IF EXISTS wholesalers;
 CREATE TABLE wholesalers (
   wholesalers_id int(11) NOT NULL auto_increment,
   wholesalers_name varchar(32) NOT NULL default '',
-  wholesalers_image varchar(64) default NULL,
+  wholesalers_contact_firstname varchar(32) NOT NULL default '',
+  wholesalers_contact_lastname varchar(32) NOT NULL default '',
+
+  wholesalers_email varchar(96) NOT NULL default '',
+  wholesalers_phone varchar(32) NOT NULL default '',
+  wholesalers_mobile varchar(32) NOT NULL default '',
+  wholesalers_fax varchar(32) default NULL,
+ 
+  wholesalers_street_address varchar(64) NOT NULL default '',
+  wholesalers_suburb varchar(32) default NULL,
+  wholesalers_postcode varchar(10) NOT NULL default '',
+  wholesalers_city varchar(32) NOT NULL default '',
+  wholesalers_state varchar(32) default NULL,
+  wholesalers_country_id int(11) NOT NULL default '0',
+ 
   date_added datetime default NULL,
   last_modified datetime default NULL,
   PRIMARY KEY  (wholesalers_id),

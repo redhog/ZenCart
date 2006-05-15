@@ -32,8 +32,36 @@
       case 'save':
         if (isset($_GET['mID'])) $wholesalers_id = zen_db_prepare_input($_GET['mID']);
         $wholesalers_name = zen_db_prepare_input($_POST['wholesalers_name']);
+        $wholesalers_contact_firstname = zen_db_prepare_input($_POST['wholesalers_contact_firstname']);
+        $wholesalers_contact_lastname = zen_db_prepare_input($_POST['wholesalers_contact_lastname']);
 
-        $sql_data_array = array('wholesalers_name' => $wholesalers_name);
+        $wholesalers_email = zen_db_prepare_input($_POST['wholesalers_email']);
+        $wholesalers_phone = zen_db_prepare_input($_POST['wholesalers_phone']);
+        $wholesalers_mobile = zen_db_prepare_input($_POST['wholesalers_mobile']);
+        $wholesalers_fax = zen_db_prepare_input($_POST['wholesalers_fax']);
+
+        $wholesalers_street_address = zen_db_prepare_input($_POST['wholesalers_street_address']);
+        $wholesalers_suburb = zen_db_prepare_input($_POST['wholesalers_suburb']);
+        $wholesalers_postcode = zen_db_prepare_input($_POST['wholesalers_postcode']);
+        $wholesalers_city = zen_db_prepare_input($_POST['wholesalers_city']);
+        $wholesalers_state = zen_db_prepare_input($_POST['wholesalers_state']);
+        $wholesalers_country_id = zen_db_prepare_input($_POST['wholesalers_country_id']);
+
+        $sql_data_array = array('wholesalers_name' => $wholesalers_name,
+				'wholesalers_contact_firstname' => $wholesalers_contact_firstname,
+				'wholesalers_contact_lastname' => $wholesalers_contact_lastname,
+
+				'wholesalers_email' => $wholesalers_email,
+				'wholesalers_phone' => $wholesalers_phone,
+				'wholesalers_mobile' => $wholesalers_mobile,
+				'wholesalers_fax' => $wholesalers_fax,
+
+				'wholesalers_street_address' => $wholesalers_street_address,
+				'wholesalers_suburb' => $wholesalers_suburb,
+				'wholesalers_postcode' => $wholesalers_postcode,
+				'wholesalers_city' => $wholesalers_city,
+				'wholesalers_state' => $wholesalers_state,
+				'wholesalers_country_id' => $wholesalers_country_id);
 
         if ($action == 'insert') {
           $insert_sql_data = array('date_added' => 'now()');
@@ -48,21 +76,6 @@
           $sql_data_array = array_merge($sql_data_array, $update_sql_data);
 
           zen_db_perform(TABLE_WHOLESALERS, $sql_data_array, 'update', "wholesalers_id = '" . (int)$wholesalers_id . "'");
-        }
-
-        $wholesalers_image = new upload('wholesalers_image');
-        $wholesalers_image->set_destination(DIR_FS_CATALOG_IMAGES . $_POST['img_dir']);
-        if ( $wholesalers_image->parse() &&  $wholesalers_image->save()) {
-          // remove image from database if none
-          if ($wholesalers_image->filename != 'none') {
-            $db->Execute("update " . TABLE_WHOLESALERS . "
-                          set wholesalers_image = '" .  $_POST['img_dir'] . $wholesalers_image->filename . "'
-                          where wholesalers_id = '" . (int)$wholesalers_id . "'");
-          } else {
-            $db->Execute("update " . TABLE_WHOLESALERS . "
-                          set wholesalers_image = ''
-                          where wholesalers_id = '" . (int)$wholesalers_id . "'");
-          }
         }
 
         $languages = zen_get_languages();
@@ -94,16 +107,6 @@
           zen_redirect(zen_href_link(FILENAME_WHOLESALERS, 'page=' . $_GET['page']));
         }
         $wholesalers_id = zen_db_prepare_input($_GET['mID']);
-
-        if (isset($_POST['delete_image']) && ($_POST['delete_image'] == 'on')) {
-          $wholesaler = $db->Execute("select wholesalers_image
-                                        from " . TABLE_WHOLESALERS . "
-                                        where wholesalers_id = '" . (int)$wholesalers_id . "'");
-
-          $image_location = DIR_FS_CATALOG_IMAGES . $wholesaler->fields['wholesalers_image'];
-
-          if (file_exists($image_location)) @unlink($image_location);
-        }
 
         $db->Execute("delete from " . TABLE_WHOLESALERS . "
                       where wholesalers_id = '" . (int)$wholesalers_id . "'");
@@ -166,7 +169,7 @@
                 <td class="dataTableHeadingContent" align="right"><?php echo TABLE_HEADING_ACTION; ?>&nbsp;</td>
               </tr>
 <?php
-  $wholesalers_query_raw = "select wholesalers_id, wholesalers_name, wholesalers_image, date_added, last_modified from " . TABLE_WHOLESALERS . " order by wholesalers_name";
+  $wholesalers_query_raw = "select * from " . TABLE_WHOLESALERS . " order by wholesalers_name";
   $wholesalers_split = new splitPageResults($_GET['page'], MAX_DISPLAY_SEARCH_RESULTS, $wholesalers_query_raw, $wholesalers_query_numrows);
   $wholesalers = $db->Execute($wholesalers_query_raw);
   while (!$wholesalers->EOF) {
@@ -219,19 +222,21 @@
 
       $contents = array('form' => zen_draw_form('wholesalers', FILENAME_WHOLESALERS, 'action=insert', 'post', 'enctype="multipart/form-data"'));
       $contents[] = array('text' => TEXT_NEW_INTRO);
-      $contents[] = array('text' => '<br>' . TEXT_WHOLESALERS_NAME . '<br>' . zen_draw_input_field('wholesalers_name', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_name')));
-      $contents[] = array('text' => '<br>' . TEXT_WHOLESALERS_IMAGE . '<br>' . zen_draw_file_field('wholesalers_image'));
-      $dir = @dir(DIR_FS_CATALOG_IMAGES);
-      $dir_info[] = array('id' => '', 'text' => "Main Directory");
-      while ($file = $dir->read()) {
-        if (is_dir(DIR_FS_CATALOG_IMAGES . $file) && strtoupper($file) != 'CVS' && $file != "." && $file != "..") {
-          $dir_info[] = array('id' => $file . '/', 'text' => $file);
-        }
-      }
+      $contents[] = array('text' => TEXT_WHOLESALERS_NAME . zen_draw_input_field('wholesalers_name', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_name')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_CONTACT_FIRSTNAME . zen_draw_input_field('wholesalers_contact_firstname', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_contact_firstname')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_CONTACT_LASTNAME . zen_draw_input_field('wholesalers_contact_lastname', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_contact_lastname')));
 
-      $default_directory = 'wholesalers/';
+      $contents[] = array('text' => TEXT_WHOLESALERS_EMAIL . zen_draw_input_field('wholesalers_email', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_fax')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_PHONE . zen_draw_input_field('wholesalers_phone', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_phone')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_MOBILE . zen_draw_input_field('wholesalers_mobile', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_mobile')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_FAX . zen_draw_input_field('wholesalers_fax', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_fax')));
 
-      $contents[] = array('text' => '<BR />' . TEXT_PRODUCTS_IMAGE_DIR . zen_draw_pull_down_menu('img_dir', $dir_info, $default_directory));
+      $contents[] = array('text' => TEXT_WHOLESALERS_STREET_ADDRESS . zen_draw_input_field('wholesalers_street_address', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_street_address')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_SUBURB . zen_draw_input_field('wholesalers_suburb', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_suburb')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_POSTCODE . zen_draw_input_field('wholesalers_postcode', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_postcode')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_CITY . zen_draw_input_field('wholesalers_city', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_city')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_STATE . zen_draw_input_field('wholesalers_state', '', zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_state')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_COUNTRY . zen_draw_pull_down_menu('wholesalers_country_id', zen_get_countries(), ''));
 
       $wholesaler_inputs_string = '';
       $languages = zen_get_languages();
@@ -247,18 +252,22 @@
 
       $contents = array('form' => zen_draw_form('wholesalers', FILENAME_WHOLESALERS, 'page=' . $_GET['page'] . '&mID=' . $mInfo->wholesalers_id . '&action=save', 'post', 'enctype="multipart/form-data"'));
       $contents[] = array('text' => TEXT_EDIT_INTRO);
-      $contents[] = array('text' => '<br />' . TEXT_WHOLESALERS_NAME . '<br>' . zen_draw_input_field('wholesalers_name', $mInfo->wholesalers_name, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_name')));
-      $contents[] = array('text' => '<br />' . TEXT_WHOLESALERS_IMAGE . '<br>' . zen_draw_file_field('wholesalers_image') . '<br />' . $mInfo->wholesalers_image);
-      $dir = @dir(DIR_FS_CATALOG_IMAGES);
-      $dir_info[] = array('id' => '', 'text' => "Main Directory");
-      while ($file = $dir->read()) {
-        if (is_dir(DIR_FS_CATALOG_IMAGES . $file) && strtoupper($file) != 'CVS' && $file != "." && $file != "..") {
-          $dir_info[] = array('id' => $file . '/', 'text' => $file);
-        }
-      }
-      $default_directory = substr( $mInfo->wholesalers_image, 0,strpos( $mInfo->wholesalers_image, '/')+1);
-      $contents[] = array('text' => '<BR />' . TEXT_PRODUCTS_IMAGE_DIR . zen_draw_pull_down_menu('img_dir', $dir_info, $default_directory));
-      $contents[] = array('text' => '<br />' . zen_info_image($mInfo->wholesalers_image, $mInfo->wholesalers_name));
+      $contents[] = array('text' => TEXT_WHOLESALERS_NAME . zen_draw_input_field('wholesalers_name', $mInfo->wholesalers_name, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_name')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_CONTACT_FIRSTNAME . zen_draw_input_field('wholesalers_contact_firstname', $mInfo->wholesalers_contact_firstname, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_contact_firstname')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_CONTACT_LASTNAME . zen_draw_input_field('wholesalers_contact_lastname', $mInfo->wholesalers_contact_lastname, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_contact_lastname')));
+
+      $contents[] = array('text' => TEXT_WHOLESALERS_EMAIL . zen_draw_input_field('wholesalers_email', $mInfo->wholesalers_email, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_fax')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_PHONE . zen_draw_input_field('wholesalers_phone', $mInfo->wholesalers_phone, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_phone')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_MOBILE . zen_draw_input_field('wholesalers_mobile', $mInfo->wholesalers_mobile, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_mobile')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_FAX . zen_draw_input_field('wholesalers_fax', $mInfo->wholesalers_fax, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_fax')));
+
+      $contents[] = array('text' => TEXT_WHOLESALERS_STREET_ADDRESS . zen_draw_input_field('wholesalers_street_address', $mInfo->wholesalers_street_address, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_street_address')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_SUBURB . zen_draw_input_field('wholesalers_suburb', $mInfo->wholesalers_suburb, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_suburb')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_POSTCODE . zen_draw_input_field('wholesalers_postcode', $mInfo->wholesalers_postcode, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_postcode')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_CITY . zen_draw_input_field('wholesalers_city', $mInfo->wholesalers_city, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_city')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_STATE . zen_draw_input_field('wholesalers_state', $mInfo->wholesalers_state, zen_set_field_length(TABLE_WHOLESALERS, 'wholesalers_state')));
+      $contents[] = array('text' => TEXT_WHOLESALERS_COUNTRY . zen_draw_pull_down_menu('wholesalers_country_id', zen_get_countries(), $mInfo->wholesalers_country_id));
+
       $wholesaler_inputs_string = '';
       $languages = zen_get_languages();
       for ($i=0, $n=sizeof($languages); $i<$n; $i++) {
@@ -274,7 +283,6 @@
       $contents = array('form' => zen_draw_form('wholesalers', FILENAME_WHOLESALERS, 'page=' . $_GET['page'] . '&mID=' . $mInfo->wholesalers_id . '&action=deleteconfirm'));
       $contents[] = array('text' => TEXT_DELETE_INTRO);
       $contents[] = array('text' => '<br><b>' . $mInfo->wholesalers_name . '</b>');
-      $contents[] = array('text' => '<br>' . zen_draw_checkbox_field('delete_image', '', true) . ' ' . TEXT_DELETE_IMAGE);
 
       $contents[] = array('align' => 'center', 'text' => '<br>' . zen_image_submit('button_delete.gif', IMAGE_DELETE) . ' <a href="' . zen_href_link(FILENAME_WHOLESALERS, 'page=' . $_GET['page'] . '&mID=' . $mInfo->wholesalers_id) . '">' . zen_image_button('button_cancel.gif', IMAGE_CANCEL) . '</a>');
       break;
@@ -285,13 +293,12 @@
         $contents[] = array('align' => 'center', 'text' => '<a href="' . zen_href_link(FILENAME_WHOLESALERS, 'page=' . $_GET['page'] . '&mID=' . $mInfo->wholesalers_id . '&action=edit') . '">' . zen_image_button('button_edit.gif', IMAGE_EDIT) . '</a> <a href="' . zen_href_link(FILENAME_WHOLESALERS, 'page=' . $_GET['page'] . '&mID=' . $mInfo->wholesalers_id . '&action=delete') . '">' . zen_image_button('button_delete.gif', IMAGE_DELETE) . '</a>');
         $contents[] = array('text' => '<br>' . TEXT_DATE_ADDED . ' ' . zen_date_short($mInfo->date_added));
         if (zen_not_null($mInfo->last_modified)) $contents[] = array('text' => TEXT_LAST_MODIFIED . ' ' . zen_date_short($mInfo->last_modified));
-        $contents[] = array('text' => '<br>' . zen_info_image($mInfo->wholesalers_image, $mInfo->wholesalers_name));
       }
       break;
   }
 
   if ( (zen_not_null($heading)) && (zen_not_null($contents)) ) {
-    echo '            <td width="25%" valign="top">' . "\n";
+    echo '            <td width="40%" valign="top">' . "\n";
 
     $box = new box;
     echo $box->infoBox($heading, $contents);

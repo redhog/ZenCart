@@ -41,7 +41,21 @@ define('TEXT_NEW_INTRO', 'Please fill out the following information for the new 
 define('TEXT_EDIT_INTRO', 'Please make any necessary changes');
 
 define('TEXT_WHOLESALERS_NAME', 'Wholesalers Name:');
-define('TEXT_WHOLESALERS_IMAGE', 'Wholesalers Image:');
+define('TEXT_WHOLESALERS_CONTACT_FIRSTNAME', "Contact persons' first name:");
+define('TEXT_WHOLESALERS_CONTACT_LASTNAME', "Contact persons' last name:");
+
+define('TEXT_WHOLESALERS_EMAIL', 'Email:');
+define('TEXT_WHOLESALERS_PHONE', 'Phone:');
+define('TEXT_WHOLESALERS_MOBILE', 'Mobile:');
+define('TEXT_WHOLESALERS_FAX', 'Fax:');
+
+define('TEXT_WHOLESALERS_STREET_ADDRESS', 'Street address:');
+define('TEXT_WHOLESALERS_SUBURB', 'Suburb:');
+define('TEXT_WHOLESALERS_POSTCODE', 'Postcode:');
+define('TEXT_WHOLESALERS_CITY', 'City:');
+define('TEXT_WHOLESALERS_STATE', 'State:');
+define('TEXT_WHOLESALERS_COUNTRY', 'Country:');
+
 define('TEXT_WHOLESALERS_URL', 'Wholesalers URL:');
 
 define('TEXT_DELETE_INTRO', 'Are you sure you want to delete this wholesaler?');

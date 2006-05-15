@@ -157,6 +157,7 @@ define('FILENAME_UNSUBSCRIBE', 'unsubscribe');
 define('FILENAME_ZONES', 'zones');
 define('FILENAME_WHOS_ONLINE', 'whos_online');
 define('FILENAME_WHOLESALERS', 'wholesalers');
+define('FILENAME_WHOLESALER_DETAILS', 'wholesalerdetails.php');
 
 
 // The following have .php or other suffix INTENTIONALLY !!!
