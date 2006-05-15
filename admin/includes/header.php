@@ -159,34 +159,6 @@ if ((basename($PHP_SELF) != FILENAME_DEFINE_LANGUAGE . '.php') and (basename($PH
   }
 ?>
 <!-- All HEADER_ definitions in the columns below are defined in includes/languages/english.php //-->
-<table border="0" width="100%" cellspacing="0" cellpadding="0" class="header">
-<?php
-// special spacing for alt_nav.php
-  if (basename($PHP_SELF) == 'alt_nav.php') {
-?>
-<tr><td>&nbsp;</td></tr>
-<?php } // alt_nav spacing ?>
-  <tr>
-    <td align="left" valign="top" height="<?php echo HEADER_LOGO_HEIGHT; ?>" width="<?php echo HEADER_LOGO_WIDTH; ?>"><?php echo '<a href="' . zen_href_link(FILENAME_DEFAULT) . '">' . zen_image(DIR_WS_IMAGES . HEADER_LOGO_IMAGE, HEADER_ALT_TEXT) . '</a>'; ?></td>
-    <td colspan="2" align="left"><table width="100%"><tr>
-    <td align="left" class="main" valign="top"><?php if ($new_gv_queue_cnt > 0) echo $goto_gv . '<br />' . sprintf(TEXT_SHOW_GV_QUEUE, $new_gv_queue_cnt); ?></td>
-<?php
-  if (isset($_SESSION['reset_admin_activity_log']) and ($_SESSION['reset_admin_activity_log'] == true and (basename($PHP_SELF) == FILENAME_DEFAULT . '.php'))) {
-?>
-    <td align="center" class="main" valign="top"><?php echo '<a href="' . zen_href_link(FILENAME_STORE_MANAGER) . '">' . zen_image_button('button_reset.gif', RESET_ADMIN_ACTIVITY_LOG) . '<br />' . RESET_ADMIN_ACTIVITY_LOG . '</a>'; ?></td>
-<?php
-  }
-?>
-<?php
-  if ($new_version) {
-?>
-    <td align="right" class="main" valign="top"><?php echo $new_version; ?></td>
-<?php
-  }
-?>
-    </tr></table></td>
-  </tr>
-</table>
 <table border="0" cellspacing="0" cellpadding="0" width="100%">
   <tr class="headerBar" height="20" width="100%">
 
