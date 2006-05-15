@@ -103,7 +103,7 @@ define('TEXT_PRODUCTS_WHOLESALERS', 'Products Wholesalers:');
 define('TEXT_PRODUCTS_NAME', 'Products Name:');
 define('TEXT_PRODUCTS_DESCRIPTION', 'Products Description:');
 define('TEXT_PRODUCTS_QUANTITY', 'Products Quantity:');
-define('TEXT_PRODUCTS_MODEL', 'Products Model:');
+define('TEXT_PRODUCTS_MODEL', 'Products Part #:');
 define('TEXT_PRODUCTS_PARTS', 'Parts sold separately:');
 define('TEXT_PRODUCTS_IMAGE', 'Products Image:');
 define('TEXT_PRODUCTS_IMAGE_DIR', 'Upload to directory:');
@@ -132,7 +132,7 @@ define('TEXT_COPY_AS_DUPLICATE', 'Duplicate product');
   define('TEXT_COPY_DISCOUNTS_NO','No');
 
   define('TEXT_INFO_CURRENT_PRODUCT', 'Current Product: ');
-  define('TABLE_HEADING_MODEL', 'Model');
+  define('TABLE_HEADING_MODEL', 'Part #');
 
   define('TEXT_INFO_HEADING_ATTRIBUTE_FEATURES','Attributes Changes for Products ID# ');
   define('TEXT_INFO_ATTRIBUTES_FEATURES_DELETE','Delete <strong>ALL</strong> Product Attributes for:<br />');
@@ -191,7 +191,7 @@ define('TEXT_COPY_AS_DUPLICATE', 'Duplicate product');
   define('TEXT_META_TAG_TITLE_INCLUDES','<strong>Mark What the Product\'s Meta Tag Title Should Include:</strong>');
   define('TEXT_PRODUCTS_METATAGS_PRODUCTS_NAME_STATUS','<strong>Product Name:</strong>');
   define('TEXT_PRODUCTS_METATAGS_TITLE_STATUS','<strong>Title:</strong>');
-  define('TEXT_PRODUCTS_METATAGS_MODEL_STATUS','<strong>Model:</strong>');
+  define('TEXT_PRODUCTS_METATAGS_MODEL_STATUS','<strong>Part #:</strong>');
   define('TEXT_PRODUCTS_METATAGS_PRICE_STATUS','<strong>Price:</strong>');
   define('TEXT_PRODUCTS_METATAGS_TITLE_TAGLINE_STATUS','<strong>Title/Tagline:</strong>');
   define('TEXT_META_TAGS_TITLE','<strong>Meta Tag Title:</strong>');

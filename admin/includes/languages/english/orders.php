@@ -37,7 +37,7 @@ define('TABLE_HEADING_STATUS', 'Status');
 define('TABLE_HEADING_TYPE', 'Order Type');
 define('TABLE_HEADING_ACTION', 'Action');
 define('TABLE_HEADING_QUANTITY', 'Qty.');
-define('TABLE_HEADING_PRODUCTS_MODEL', 'Model');
+define('TABLE_HEADING_PRODUCTS_MODEL', 'Part #');
 define('TABLE_HEADING_PRODUCTS', 'Products');
 define('TABLE_HEADING_TAX', 'Tax');
 define('TABLE_HEADING_TOTAL', 'Total');

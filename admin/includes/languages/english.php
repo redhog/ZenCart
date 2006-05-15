@@ -438,7 +438,7 @@ define('TEXT_DISPLAY_NUMBER_OF_COUPONS', 'Displaying <b>%d</b> to <b>%d</b> (of 
 define('TEXT_VALID_PRODUCTS_LIST', 'Products List');
 define('TEXT_VALID_PRODUCTS_ID', 'Products ID');
 define('TEXT_VALID_PRODUCTS_NAME', 'Products Name');
-define('TEXT_VALID_PRODUCTS_MODEL', 'Products Model');
+define('TEXT_VALID_PRODUCTS_MODEL', 'Products Part #');
 
 define('TEXT_VALID_CATEGORIES_LIST', 'Categories List');
 define('TEXT_VALID_CATEGORIES_ID', 'Category ID');
@@ -465,7 +465,7 @@ define('NOT_INSTALLED_TEXT','Not Installed');
   define('BOX_CATALOG_CATEGORIES_ATTRIBUTES_CONTROLLER','Attributes Controller');
 
 // generic model
-  define('TEXT_MODEL','Model:');
+  define('TEXT_MODEL','Part #:');
 
 // column controller
   define('BOX_TOOLS_LAYOUT_CONTROLLER','Layout Boxes Controller');
@@ -605,7 +605,7 @@ define('ENTRY_NOTHING_TO_SEND','You haven\'t entered any content for your messag
   define('TEXT_CATEGORIES_PRODUCTS_SORT_ORDER_INFO', 'Categories/Product Display Order: ');
   define('TEXT_SORT_PRODUCTS_SORT_ORDER_PRODUCTS_NAME', 'Products Sort Order, Products Name');
   define('TEXT_SORT_PRODUCTS_NAME', 'Products Name');
-  define('TEXT_SORT_PRODUCTS_MODEL', 'Products Model');
+  define('TEXT_SORT_PRODUCTS_MODEL', 'Products Part #');
   define('TEXT_SORT_PRODUCTS_QUANTITY', 'Products Qty+, Products Name');
   define('TEXT_SORT_PRODUCTS_QUANTITY_DESC', 'Products Qty-, Products Name');
   define('TEXT_SORT_PRODUCTS_PRICE', 'Products Price+, Products Name');

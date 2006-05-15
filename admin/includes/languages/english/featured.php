@@ -23,7 +23,7 @@
 define('HEADING_TITLE', 'Featured Products');
 
 define('TABLE_HEADING_PRODUCTS', 'Products');
-define('TABLE_HEADING_PRODUCTS_MODEL','Model');
+define('TABLE_HEADING_PRODUCTS_MODEL','Part #');
 define('TABLE_HEADING_PRODUCTS_PRICE', 'Products Price/Special/Sale');
 define('TABLE_HEADING_PRODUCTS_PERCENTAGE','Percentage');
 define('TABLE_HEADING_AVAILABLE_DATE', 'Available');
