@@ -29,17 +29,17 @@ if (!is_writeable(DIR_FS_IMPORT)) {
 
 $import_result = array();
 
-function getCategoryByPathStr($parent, $path) {
+function getCategoryByPathStr($parent, $path, $create) {
   if ($path == '')
     return $parent;
-  return getCategoryByPath($parent, explode("/", $path));
+  return getCategoryByPath($parent, explode("/", $path), $create);
 }
 
-function getCategoryByPath($parent, $path) {
+function getCategoryByPath($parent, $path, $create) {
   global $db, $messageStack;
   foreach ($path as $item) {
     $line = $db->Execute("select categories_description.categories_id as categories_id " .
-                         "from categories, categories_description " .
+                         "from " . TABLE_CATEGORIES . " as categories, " . TABLE_CATEGORIES_DESCRIPTION . " as categories_description " .
                          "where categories_description.categories_name = '{$item}' " .
                          "and categories.categories_id = categories_description.categories_id " .
                          "and categories.parent_id = '{$parent}'");
@@ -48,9 +48,71 @@ function getCategoryByPath($parent, $path) {
 	$messageStack->add("Category name '{$item}' is ambigous", 'warning');
       $parent = $line->fields['categories_id'];
     } else
-      $messageStack->add("Unable to find the category named '{$item}'", 'error');
+      if ($create) {
+	zen_db_perform(TABLE_CATEGORIES, array('parent_id' => $parent));
+	$parent = zen_db_insert_id();
+	zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, array("categories_id" => $parent, 'categories_name' => $item));
+      } else {
+        $messageStack->add("Unable to find the category named '{$item}'", 'error');
+        return -1;
+      }
   }
   return $parent;
+}
+
+function getProductByModel($model, $create, $inCurrentCategory) {
+  global $db, $messageStack;
+  $line = $db->Execute("select products_id " .
+                       "from " . TABLE_PRODUCTS . " " .
+                       "where products_model = '{$model}'");
+  if ($line->RecordCount() > 0) {
+    if ($line->RecordCount() > 1)
+      $messageStack->add("Product model '{$item}' is ambigous", 'warning');
+    return $line->fields['products_id'];
+  } else {
+    if ($create) {
+      $products_data = array('products_model' => $model);
+      if ($inCurrentCategory) $products_data['master_categories_id'] = $current_category_id;
+      zen_db_perform(TABLE_PRODUCTS, $products_data);
+      $products_id = zen_db_insert_id();
+      zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, array('products_id' => $products_id));
+      if ($inCurrentCategory)
+       zen_db_perform(TABLE_PRODUCTS_TO_CATEGORIES, array('products_id' => $products_id, 'categories_id' => $current_category_id));
+      return $products_id;
+    } else {
+      $messageStack->add("Unable to find the product with model '{$model}'", 'error');
+      return -1;
+   }
+  }
+}
+
+function appendPath($path1, $path2) {
+  if ($path1 and $path2)
+    return $path1 . '/' . $path2;
+  if ($path1)
+    return $path1;
+  return $path2;
+}
+
+function addCategoryPictures($root, $path) {
+ global $db, $messageStack, $import_result, $current_category_id;
+  if ($dir = opendir(appendPath($root, $path))) {
+    while (($sub = readdir($dir)) !== false) {
+      if ($sub == '.' || $sub == '..') continue;
+      $subpath = appendPath($path, $sub);
+      if (is_dir(appendPath($root, $subpath))) {
+	addCategoryPictures($root, $subpath);
+      } else {
+	mkdir(appendPath(DIR_FS_CATALOG_IMAGES, $path), 0777, true);
+	rename(appendPath($root, $subpath), appendPath(DIR_FS_CATALOG_IMAGES, $subpath));
+	$categorypath = substr($subpath, 0, strrpos($subpath, '.'));
+	$category = getCategoryByPathStr($current_category_id, $categorypath, 1);
+	zen_db_perform(TABLE_CATEGORIES, array('categories_image' => $subpath), 'update', "categories_id='{$category}'");
+	$import_result[] = "Added picture '" . $subpath . "' for category '" . $categorypath . "'.";
+      }
+    }
+    closedir($dir);
+  }
 }
 
 switch($action) {
@@ -93,47 +155,31 @@ switch($action) {
 
   unlink($products->file['tmp_name']);  
 
-  if ($file = fopen(DIR_FS_IMPORT . 'categories.csv', 'r')) {
-    $import_result[] = 'Impored categories from categories.csv';
+  if ($file = fopen(appendPath(DIR_FS_IMPORT, 'categories.csv'), 'r')) {
     $keys = fgetcsv($file);
 
-    $categories_default_map = array();
-    $categories_default_keys = array_keys($categories_default_map);
-
     $categories_description_default_map = array(
-      'categories_name' => false,
       'categories_description' => false,
      );
     $categories_description_default_keys = array_keys($categories_description_default_map);
 
     while (($data = fgetcsv($file)) !== FALSE) {
       $data = array_combine($keys, array_map(zen_db_prepare_input, $data));
-      $path = explode('/', $data['path']);
-      $name = $path[count($path)-1];
-      unset($path[count($path)-1]);
-
-      $categories_data = array_merge($categories_default_map, array_intersect_key($data, $categories_default_map));
-      $categories_data['parent_id'] = getCategoryByPath($current_category_id, $path);
-      zen_db_perform(TABLE_CATEGORIES, $categories_data);
-      $categories_id = zen_db_insert_id();
-
+      $categories_id = getCategoryByPathStr($current_category_id, $data['path'], 1);
       $categories_description_data = array_merge($categories_description_default_map, array_intersect_key($data, $categories_description_default_map));
-      $categories_description_data["categories_id"] = $categories_id;
-      $categories_description_data['categories_name'] = $name;
 
-      zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, $categories_description_data);
-
-      $import_result[] = "Added category '" . $data['path'] . "' #" . $categories_id;
+      zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, $categories_description_data, 'update', "categories_id='{$categories_id}'");
+      $import_result[] = "Added category '" . $data['path'] . "' as #" . $categories_id;
     }
   }
 
-  if ($file = fopen(DIR_FS_IMPORT . 'products.csv', 'r')) {
-   $import_result[] = 'Impored products from products.csv';
+  addCategoryPictures(appendPath(DIR_FS_IMPORT, 'categories'), '');
+
+  if ($file = fopen(appendPath(DIR_FS_IMPORT, 'products.csv'), 'r')) {
    $keys = fgetcsv($file);
 
    $products_default_map = array(
      'products_quantity' => 0,
-     'products_model' => False,
      'products_price' => 0,
      'products_virtual' => 0,
      'products_date_added' => 'now()',
@@ -166,68 +212,63 @@ switch($action) {
    $products_description_default_keys = array_keys($products_description_default_map);
    while (($data = fgetcsv($file)) !== FALSE) {
     $data = array_combine($keys, array_map(zen_db_prepare_input, $data));
-    $products_data = array_merge($products_default_map, array_intersect_key($data, $products_default_map));
 
-    $categories = array();
+    $products_id = getProductByModel($data['products_model'], 1, !isset($data['categories']));
+
     if (isset($data['categories'])) {
+      $categories = array();
       $category_paths = explode(',', $data['categories']);
       foreach($category_paths as $category_path) {
-        $categories[] = getCategoryByPathStr($current_category_id, $category_path);
+        $categories[] = getCategoryByPathStr($current_category_id, $category_path, 1);
       }
-    } else {
-      $categories = array($current_category_id);
+      $products_data['master_categories_id'] = $categories[0];
+      foreach ($categories as $category) {
+        $line = $db->Execute("select products_id from " . TABLE_PRODUCTS_TO_CATEGORIES . " where products_id = '{$products_id}' and categories_id = '{$category}'");
+        if ($line->RecordCount() == 0)
+ 	  zen_db_perform(TABLE_PRODUCTS_TO_CATEGORIES, array('products_id' => $products_id, 'categories_id' => $category));
+      }
     }
-    $products_data['master_categories_id'] = $categories[0];
 
-    $parts = array();
+    $products_data = array_merge($products_default_map, array_intersect_key($data, $products_default_map));
+    zen_db_perform(TABLE_PRODUCTS, $products_data, 'update', "products_id='{$products_id}'");
+    zen_update_products_price_sorter($products_id);
+
     if (isset($data['parts']) && $data['parts'] != '') {
       $part_exprs = explode(',', $data['parts']);
       foreach($part_exprs as $part_expr) {
         $part_items = explode("|", $part_expr);
         $part_model = $part_items[0];
-        $line = $db->Execute("select products_id from products where products_model = '{$part_model}'");
+        $line = $db->Execute("select products_id from " . TABLE_PRODUCTS . " as products where products_model = '{$part_model}'");
         if ($line->RecordCount() > 0) {
           if ($line->RecordCount() > 1)
 	    $messageStack->add("Part part number '{$part_model}' is ambigous", 'warning');
-	  $parts[] = array('product_part' => $line->fields['products_id'], 'amount' => isset($part_items[1]) ? $part_items[1] : 1, 'visible' => isset($part_items[2]) ? $part_items[2] : 1);
+	  zen_db_perform(TABLE_PRODUCTS_PARTS, array('product' => $products_id,
+						     'product_part' => $line->fields['products_id'],
+						     'amount' => isset($part_items[1]) ? $part_items[1] : 1,
+						     'visible' => isset($part_items[2]) ? $part_items[2] : 1));
         } else
 	  $messageStack->add("Unable to find the part with part number '{$part_model}'", 'error');
       }
-    }
-    
-    zen_db_perform(TABLE_PRODUCTS, $products_data);
-    $products_id = zen_db_insert_id();
-    zen_update_products_price_sorter($products_id);
-
-    foreach ($categories as $category) {
-      zen_db_perform(TABLE_PRODUCTS_TO_CATEGORIES, array('products_id' => $products_id, 'categories_id' => $category));
-    }
-
-    foreach ($parts as $part) {
-      $part["product"] = $products_id;
-      zen_db_perform(TABLE_PRODUCTS_PARTS, $part);
     }
 
     $products_description_data = array_intersect_key($data, $products_description_default_map);
     if ($products_description_data) {
      $products_description_data = array_merge($products_description_default_map, $products_description_data);
-     $products_description_data['products_id'] = $products_id;
-     zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $products_description_data);
+     zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $products_description_data, 'update', "products_id='{$products_id}'");
      $products_description_id = zen_db_insert_id();
     }
-    $import_result[] = "Added product '" . $products_data['products_model'] . "' #" . $products_id;
+    $import_result[] = "Added product '" . $data['products_model'] . "' as #" . $products_id;
    }
    fclose($file);
   }
 
-  if ($dir = opendir(DIR_FS_IMPORT . 'products/')) {
-   $import_result[] = 'Importing pictures from products/';
+  if ($dir = opendir(appendPath(DIR_FS_IMPORT, 'products'))) {
    while (($file = readdir($dir)) !== false) {
     if ($file == '.' || $file == '..') continue;
     $model = substr($file, 0, strrpos($file, '.'));
-    rename(DIR_FS_IMPORT . 'products/' . $file, DIR_FS_CATALOG_IMAGES . $file);
-    zen_db_perform(TABLE_PRODUCTS, array('products_image' => $file), 'update', 'products_model = "' . $model . '"');
-    $import_result[] = "Added picture '" . $file . "' fo '" . $model . "'.";
+    rename(appendPath(appendPath(DIR_FS_IMPORT, 'products'), $file), appendPath(DIR_FS_CATALOG_IMAGES, $file));
+    zen_db_perform(TABLE_PRODUCTS, array('products_image' => $file), 'update', 'products_id = "' . getProductByModel($model, 1, 1) . '"');
+    $import_result[] = "Added picture '" . $file . "' for product '" . $model . "'.";
    }
    closedir($dir);
   }
@@ -300,7 +341,7 @@ switch($action) {
             <td colspan="3" class="main" align="left" valign="middle"><?php echo TEXT_IMPORT_PRODUCTS; ?></td>
           </tr>
 
-          <tr><form name = "locate_configure" action="<?php echo zen_href_link(FILENAME_IMPORT, "action=import_products&cPath={$_GET['cPath']}", 'NONSSL'); ?>"' method="post" enctype="multipart/form-data">
+          <tr><form name = "import" action="<?php echo zen_href_link(FILENAME_IMPORT, "action=import_products&cPath={$_GET['cPath']}", 'NONSSL'); ?>"' method="post" enctype="multipart/form-data">
             <td class="main" align="left" valign="bottom"><?php echo '<strong>' . TEXT_IMPORT_PRODUCTS_FIELD . '</strong>' . '<br />' . zen_draw_file_field('import_products_products'); ?></td>
             <td class="main" align="right" valign="bottom"><?php echo zen_image_submit('button_import.gif', IMAGE_IMPORT); ?></td>
             <td class="main" align="right" valign="bottom"><?php echo "<a href='" . zen_href_link(FILENAME_CATEGORIES, "cPath={$cPath}") . "'>" . zen_image_button('button_back.gif', IMAGE_BACK) . "</a>"; ?></td>
