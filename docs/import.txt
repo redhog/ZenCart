@@ -1,0 +1,61 @@
+The import file format is a zip-file with one or more of the following
+files and directories:
+
+All .csv files are in the CSV format, as can be exported from MS
+Excel, OpenOffice Calc, etc, and the first row contains column names,
+specifying what columns to import.
+
+/products.csv
+  List of products.
+  Available collumns and their default values:
+    Name			       Default value		Note
+    products_model		       -			Part number for products. This column must be present.
+    products_quantity		       0
+    products_price		       0
+    products_virtual		       0
+    products_date_added		       now
+    products_last_modified	       now
+    products_date_available	       years ago
+    products_weight		       NONE
+    products_status		       0
+    products_quantity_order_min	       1
+    products_quantity_order_units      1
+    product_is_free		       0
+    product_is_call		       0
+    products_quantity_mixed	       0
+    product_is_always_free_shipping    0
+    products_qty_box_status	       0
+    products_quantity_order_max	       0
+    products_sort_order		       0
+    products_price_sorter	       0
+    products_mixed_discount_quantity   0
+    metatags_title_status	       0
+    metatags_products_name_status      0
+    metatags_model_status	       0
+    metatags_price_status	       0
+    metatags_title_tagline_status      0
+    products_name		       NONE
+    products_description	       NONE
+    products_url		       NONE
+    categories			       current category		Comma-separated list of categories specified as /-separated paths.
+    parts			       NONE			Comma-separated list of kit-parts specified by their part number.
+
+/products
+  Directory of pictures for products.
+  Each file in the directory should be named by the part number for
+  the product and can have one of the extensions .jpg, .gif or .png.
+  Example: MYPRT32.jpg for the product with part number MYPRT32
+
+/categories.csv
+  List of categories.
+  Available collumns and their default values:
+    Name			       Default value		Note
+    path			       -			/-separated path to the new category. This column must be present.
+    categories_description	       NONE
+
+/categories
+  Directory tree of pictures for categories.
+  Each file in the directory should be have a path that corresponds to
+  a category, and one of the extensions .jpg, .gif or .png.
+  Example: Houses/Exterior/Windows.png for the category Windows in the
+  category Exterior in the category Houses.
