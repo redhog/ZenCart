@@ -30,7 +30,7 @@
 
   if (zen_not_null($cascaded_prod_id_for_delete) && zen_not_null($cascaded_prod_cat_for_delete) ) {
     $product_id = $cascaded_prod_id_for_delete;
-    $product_categories = $cascaded_prod_cat_for_delete;
+    $product_categories = array($cascaded_prod_cat_for_delete);
     $do_delete_flag = true;
     // no check for $delete_linked here, because it should already be passed from categories.php
   }
