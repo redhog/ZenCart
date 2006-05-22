@@ -39,6 +39,10 @@ specifying what columns to import.
     products_url		       NONE
     categories			       current category		Comma-separated list of categories specified as /-separated paths.
     parts			       NONE			Comma-separated list of kit-parts specified by their part number.
+    wholesaler			       -			Wholesaler name
+    wholesaler_amount		       1			Amount
+    wholesaler_price		       -			Price per item when bying wholesaler_amount items
+    wholesaler_model		       products_model		Wholesalers' part-number
 
 /products
   Directory of pictures for products.
