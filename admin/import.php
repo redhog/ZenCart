@@ -51,7 +51,7 @@ function getCategoryByPath($parent, $path, $create) {
       if ($create) {
 	zen_db_perform(TABLE_CATEGORIES, array('parent_id' => $parent));
 	$parent = zen_db_insert_id();
-	zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, array("categories_id" => $parent, 'categories_name' => $item));
+	zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, array("categories_id" => $parent, 'language_id' => $_SESSION['languages_id'], 'categories_name' => $item));
       } else {
         $messageStack->add("Unable to find the category named '{$item}'", 'error');
         return -1;
@@ -75,12 +75,35 @@ function getProductByModel($model, $create, $inCurrentCategory) {
       if ($inCurrentCategory) $products_data['master_categories_id'] = $current_category_id;
       zen_db_perform(TABLE_PRODUCTS, $products_data);
       $products_id = zen_db_insert_id();
-      zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, array('products_id' => $products_id));
+      zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, array('products_id' => $products_id, 'language_id' => $_SESSION['languages_id']));
       if ($inCurrentCategory)
        zen_db_perform(TABLE_PRODUCTS_TO_CATEGORIES, array('products_id' => $products_id, 'categories_id' => $current_category_id));
       return $products_id;
     } else {
       $messageStack->add("Unable to find the product with model '{$model}'", 'error');
+      return -1;
+   }
+  }
+}
+
+
+function getWholesalerByName($name, $create) {
+  global $db, $messageStack;
+  $line = $db->Execute("select wholesalers_id " .
+                       "from " . TABLE_WHOLESALERS . " " .
+                       "where wholesalers_name = '{$name}'");
+  if ($line->RecordCount() > 0) {
+    if ($line->RecordCount() > 1)
+      $messageStack->add("Wholesaler name '{$item}' is ambigous", 'warning');
+    return $line->fields['wholesalers_id'];
+  } else {
+    if ($create) {
+      zen_db_perform(TABLE_WHOLESALERS, array('wholesalers_name' => $name));
+      $wholesalers_id = zen_db_insert_id();
+      zen_db_perform(TABLE_WHOLESALERS_INFO, array('wholesalers_id' => $wholesalers_id, 'languages_id' => $_SESSION['languages_id']));
+      return $wholesalers_id;
+    } else {
+      $messageStack->add("Unable to find the wholesaler with name '{$name}'", 'error');
       return -1;
    }
   }
@@ -168,7 +191,7 @@ switch($action) {
       $categories_id = getCategoryByPathStr($current_category_id, $data['path'], 1);
       $categories_description_data = array_merge($categories_description_default_map, array_intersect_key($data, $categories_description_default_map));
 
-      zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, $categories_description_data, 'update', "categories_id='{$categories_id}'");
+      zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, $categories_description_data, 'update', "categories_id='{$categories_id}' and language_id={$_SESSION['languages_id']}");
       $import_result[] = "Added category '" . $data['path'] . "' as #" . $categories_id;
     }
   }
@@ -251,10 +274,18 @@ switch($action) {
       }
     }
 
+    if (isset($data['wholesaler']) && isset($data['wholesaler_price'])) {
+     zen_db_perform(TABLE_PRODUCTS_WHOLESALERS, array('product' => $products_id,
+						      'wholesaler' => getWholesalerByName($data['wholesaler'], 1),
+						      'model' => isset($data['wholesaler_model']) ? $data['wholesaler_model'] : $data['products_model'],
+						      'amount' => isset($data['wholesaler_amount']) ? $data['wholesaler_amount'] : 1,
+						      'price' => $data['wholesaler_price']));
+    }
+
     $products_description_data = array_intersect_key($data, $products_description_default_map);
     if ($products_description_data) {
      $products_description_data = array_merge($products_description_default_map, $products_description_data);
-     zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $products_description_data, 'update', "products_id='{$products_id}'");
+     zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $products_description_data, 'update', "products_id='{$products_id}' and language_id={$_SESSION['languages_id']}");
      $products_description_id = zen_db_insert_id();
     }
     $import_result[] = "Added product '" . $data['products_model'] . "' as #" . $products_id;
