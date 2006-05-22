@@ -27,7 +27,10 @@ if (!is_writeable(DIR_FS_IMPORT)) {
  $messageStack->add("Unable to write to " . DIR_FS_IMPORT, 'error');
 }
 
-$import_result = array();
+$imported_products = 0;
+$imported_product_pictures = 0;
+$imported_categories = 0;
+$imported_category_pictures = 0;
 
 function getCategoryByPathStr($parent, $path, $create) {
   if ($path == '')
@@ -118,7 +121,7 @@ function appendPath($path1, $path2) {
 }
 
 function addCategoryPictures($root, $path) {
- global $db, $messageStack, $import_result, $current_category_id;
+ global $db, $messageStack, $imported_category_pictures, $current_category_id;
   if ($dir = opendir(appendPath($root, $path))) {
     while (($sub = readdir($dir)) !== false) {
       if ($sub == '.' || $sub == '..') continue;
@@ -131,7 +134,7 @@ function addCategoryPictures($root, $path) {
 	$categorypath = substr($subpath, 0, strrpos($subpath, '.'));
 	$category = getCategoryByPathStr($current_category_id, $categorypath, 1);
 	zen_db_perform(TABLE_CATEGORIES, array('categories_image' => $subpath), 'update', "categories_id='{$category}'");
-	$import_result[] = "Added picture '" . $subpath . "' for category '" . $categorypath . "'.";
+	$imported_category_pictures += 1;
       }
     }
     closedir($dir);
@@ -192,7 +195,7 @@ switch($action) {
       $categories_description_data = array_merge($categories_description_default_map, array_intersect_key($data, $categories_description_default_map));
 
       zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, $categories_description_data, 'update', "categories_id='{$categories_id}' and language_id={$_SESSION['languages_id']}");
-      $import_result[] = "Added category '" . $data['path'] . "' as #" . $categories_id;
+      $imported_categories += 1;
     }
   }
 
@@ -237,6 +240,7 @@ switch($action) {
     $data = array_combine($keys, array_map(zen_db_prepare_input, $data));
 
     $products_id = getProductByModel($data['products_model'], 1, !isset($data['categories']));
+    $products_data = array_merge($products_default_map, array_intersect_key($data, $products_default_map));
 
     if (isset($data['categories'])) {
       $categories = array();
@@ -252,7 +256,6 @@ switch($action) {
       }
     }
 
-    $products_data = array_merge($products_default_map, array_intersect_key($data, $products_default_map));
     zen_db_perform(TABLE_PRODUCTS, $products_data, 'update', "products_id='{$products_id}'");
     zen_update_products_price_sorter($products_id);
 
@@ -288,7 +291,7 @@ switch($action) {
      zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $products_description_data, 'update', "products_id='{$products_id}' and language_id={$_SESSION['languages_id']}");
      $products_description_id = zen_db_insert_id();
     }
-    $import_result[] = "Added product '" . $data['products_model'] . "' as #" . $products_id;
+    $imported_products += 1;
    }
    fclose($file);
   }
@@ -299,7 +302,7 @@ switch($action) {
     $model = substr($file, 0, strrpos($file, '.'));
     rename(appendPath(appendPath(DIR_FS_IMPORT, 'products'), $file), appendPath(DIR_FS_CATALOG_IMAGES, $file));
     zen_db_perform(TABLE_PRODUCTS, array('products_image' => $file), 'update', 'products_id = "' . getProductByModel($model, 1, 1) . '"');
-    $import_result[] = "Added picture '" . $file . "' for product '" . $model . "'.";
+    $imported_product_pictures += 1;
    }
    closedir($dir);
   }
@@ -355,11 +358,10 @@ switch($action) {
         <td colspan="2">
          <?php echo TEXT_IMPORT_PRODUCT_RESULTS; ?><br />
          <ul>
-          <?php
-            foreach ($import_result as $resultline) {
-              echo "<li>{$resultline}</li>";
-            }
-          ?>
+          <li>Imported products: <?php echo $imported_products; ?></li>
+          <li>Imported product pictures: <?php echo $imported_product_pictures; ?></li>
+          <li>Imported categories: <?php echo $imported_categories; ?></li>
+          <li>Imported category pictures: <?php echo $imported_category_pictures; ?></li>
          </ul>
         </td>
       </tr>
