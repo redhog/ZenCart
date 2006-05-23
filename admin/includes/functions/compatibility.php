@@ -119,6 +119,17 @@
     }
   }
 
+  if (!function_exists('array_combine')) {
+    function array_combine($keys, $values) {
+      $result = array();
+      $ln = min(count($keys), count($values));
+      for ($i = 0; $i < $ln; $i++) {
+	$result[$keys[$i]] = $values[$i];
+      }
+      return $result;
+    }
+  }
+
   if (!function_exists('array_merge')) {
     function array_merge($array1, $array2, $array3 = '') {
       if ($array3 == '') $array3 = array();

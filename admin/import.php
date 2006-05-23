@@ -158,7 +158,7 @@ switch($action) {
    break;
   }
 
-  $process = proc_open('rm -rf ' . DIR_FS_IMPORT . '*', $null_descriptorspec, $pipes, DIR_FS_IMPORT);
+  $process = proc_open('rm -rf ' . DIR_FS_IMPORT . '*', $null_descriptorspec, $pipes);
   if (!is_resource($process)) {
    $messageStack->add("Unable to run the rm program", 'error');
    break;
@@ -169,7 +169,7 @@ switch($action) {
   }
 
 
-  $process = proc_open('unzip ' . $products->file['tmp_name'], $null_descriptorspec, $pipes, DIR_FS_IMPORT);
+  $process = proc_open('cd ' . DIR_FS_IMPORT . '; unzip ' . $products->file['tmp_name'], $null_descriptorspec, $pipes);
   if (!is_resource($process)) {
    $messageStack->add("Unable to run the unzip program", 'error');
    break;
@@ -182,14 +182,14 @@ switch($action) {
   unlink($products->file['tmp_name']);  
 
   if ($file = fopen(appendPath(DIR_FS_IMPORT, 'categories.csv'), 'r')) {
-    $keys = fgetcsv($file);
+    $keys = fgetcsv($file, 65536);
 
     $categories_description_default_map = array(
       'categories_description' => false,
      );
     $categories_description_default_keys = array_keys($categories_description_default_map);
 
-    while (($data = fgetcsv($file)) !== FALSE) {
+    while (($data = fgetcsv($file, 65536)) !== FALSE) {
       $data = array_combine($keys, array_map(zen_db_prepare_input, $data));
       $categories_id = getCategoryByPathStr($current_category_id, $data['path'], 1);
       $categories_description_data = array_merge($categories_description_default_map, array_intersect_key($data, $categories_description_default_map));
@@ -202,7 +202,7 @@ switch($action) {
   addCategoryPictures(appendPath(DIR_FS_IMPORT, 'categories'), '');
 
   if ($file = fopen(appendPath(DIR_FS_IMPORT, 'products.csv'), 'r')) {
-   $keys = fgetcsv($file);
+   $keys = fgetcsv($file, 65536);
 
    $products_default_map = array(
      'products_quantity' => 0,
@@ -236,7 +236,7 @@ switch($action) {
                                              'products_url' => false
 					     );
    $products_description_default_keys = array_keys($products_description_default_map);
-   while (($data = fgetcsv($file)) !== FALSE) {
+   while (($data = fgetcsv($file, 65536)) !== FALSE) {
     $data = array_combine($keys, array_map(zen_db_prepare_input, $data));
 
     $products_id = getProductByModel($data['products_model'], 1, !isset($data['categories']));
