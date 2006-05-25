@@ -78,7 +78,10 @@ function getProductByModel($model, $create, $inCurrentCategory) {
       if ($inCurrentCategory) $products_data['master_categories_id'] = $current_category_id;
       zen_db_perform(TABLE_PRODUCTS, $products_data);
       $products_id = zen_db_insert_id();
-      zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, array('products_id' => $products_id, 'language_id' => $_SESSION['languages_id']));
+      zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, array('products_id' => $products_id,
+                                                       'language_id' => $_SESSION['languages_id'],
+						       'products_date_added' => 'now()',
+						       'products_last_modified' => 'now()'));
       if ($inCurrentCategory)
        zen_db_perform(TABLE_PRODUCTS_TO_CATEGORIES, array('products_id' => $products_id, 'categories_id' => $current_category_id));
       return $products_id;
@@ -184,15 +187,14 @@ switch($action) {
   if ($file = fopen(appendPath(DIR_FS_IMPORT, 'categories.csv'), 'r')) {
     $keys = fgetcsv($file, 65536);
 
-    $categories_description_default_map = array(
-      'categories_description' => false,
+    $categories_description_map = array(
+      'categories_description' => 0,
      );
-    $categories_description_default_keys = array_keys($categories_description_default_map);
 
     while (($data = fgetcsv($file, 65536)) !== FALSE) {
       $data = array_combine($keys, array_map(zen_db_prepare_input, $data));
       $categories_id = getCategoryByPathStr($current_category_id, $data['path'], 1);
-      $categories_description_data = array_merge($categories_description_default_map, array_intersect_key($data, $categories_description_default_map));
+      $categories_description_data = array_intersect_key($data, $categories_description_map);
 
       zen_db_perform(TABLE_CATEGORIES_DESCRIPTION, $categories_description_data, 'update', "categories_id='{$categories_id}' and language_id={$_SESSION['languages_id']}");
       $imported_categories += 1;
@@ -204,17 +206,17 @@ switch($action) {
   if ($file = fopen(appendPath(DIR_FS_IMPORT, 'products.csv'), 'r')) {
    $keys = fgetcsv($file, 65536);
 
-   $products_default_map = array(
+   $products_map = array(
      'products_quantity' => 0,
      'products_price' => 0,
      'products_virtual' => 0,
-     'products_date_added' => 'now()',
-     'products_last_modified' => 'now()',
-     'products_date_available' => False,
-     'products_weight' => False,
+     'products_date_added' => 0,
+     'products_last_modified' => 0,
+     'products_date_available' => 0,
+     'products_weight' => 0,
      'products_status' => 0,
-     'products_quantity_order_min' => 1,
-     'products_quantity_order_units' => 1,
+     'products_quantity_order_min' => 0,
+     'products_quantity_order_units' => 0,
      'product_is_free' => 0,
      'product_is_call' => 0,
      'products_quantity_mixed' => 0,
@@ -228,19 +230,17 @@ switch($action) {
      'metatags_products_name_status' => 0,
      'metatags_model_status' => 0,
      'metatags_price_status' => 0,
-     'metatags_title_tagline_status' => 0,
+     'metatags_title_tagline_status' => 0
     );
-   $products_default_keys = array_keys($products_default_map);
-   $products_description_default_map = array('products_name' => false,
-			                     'products_description' => false,
-                                             'products_url' => false
+   $products_description_map = array('products_name' => 0,
+			                     'products_description' => 0,
+                                             'products_url' => 0
 					     );
-   $products_description_default_keys = array_keys($products_description_default_map);
    while (($data = fgetcsv($file, 65536)) !== FALSE) {
     $data = array_combine($keys, array_map(zen_db_prepare_input, $data));
 
     $products_id = getProductByModel($data['products_model'], 1, !isset($data['categories']));
-    $products_data = array_merge($products_default_map, array_intersect_key($data, $products_default_map));
+    $products_data = array_intersect_key($data, $products_map);
 
     if (isset($data['categories'])) {
       $categories = array();
@@ -285,9 +285,8 @@ switch($action) {
 						      'price' => $data['wholesaler_price']));
     }
 
-    $products_description_data = array_intersect_key($data, $products_description_default_map);
+    $products_description_data = array_intersect_key($data, $products_description_map);
     if ($products_description_data) {
-     $products_description_data = array_merge($products_description_default_map, $products_description_data);
      zen_db_perform(TABLE_PRODUCTS_DESCRIPTION, $products_description_data, 'update', "products_id='{$products_id}' and language_id={$_SESSION['languages_id']}");
      $products_description_id = zen_db_insert_id();
     }
