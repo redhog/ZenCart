@@ -374,10 +374,10 @@
   define('PRODUCTS_ORDER_QTY_TEXT_IN_CART','Quantity in Cart: ');
   define('PRODUCTS_ORDER_QTY_TEXT','Add to Cart: ');
 
-  define('TEXT_PRODUCT_WEIGHT_UNIT','lbs');
+  define('TEXT_PRODUCT_WEIGHT_UNIT','kg');
 
 // Shipping
-  define('TEXT_SHIPPING_WEIGHT','lbs');
+  define('TEXT_SHIPPING_WEIGHT','kg');
   define('TEXT_SHIPPING_BOXES', 'Boxes');
 
 // Discount Savings

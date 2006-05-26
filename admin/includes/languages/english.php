@@ -573,7 +573,7 @@ define('TEXT_INFO_SET_MASTER_CATEGORIES_ID_WARNING', '<strong>WARNING:</strong> 
 define('PRODUCTS_PRICE_IS_CALL_FOR_PRICE_TEXT', 'Product is Call for Price');
 define('PRODUCTS_PRICE_IS_FREE_TEXT','Product is Free');
 
-define('TEXT_PRODUCT_WEIGHT_UNIT','lbs');
+define('TEXT_PRODUCT_WEIGHT_UNIT','kg');
 
 // min, max, units
 define('PRODUCTS_QUANTITY_MAX_TEXT_LISTING', 'Max:');
